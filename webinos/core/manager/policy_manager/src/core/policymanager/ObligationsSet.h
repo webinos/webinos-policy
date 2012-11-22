@@ -29,6 +29,8 @@ private:
 public:
 	ObligationsSet(TiXmlElement*);
 	virtual ~ObligationsSet();
+
+	bool evaluate(Request *);
 };
 
 #endif /* OBLIGATIONSSET_H_ */
