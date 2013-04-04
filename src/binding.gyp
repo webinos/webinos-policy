@@ -1,0 +1,80 @@
+{
+  'variables': {
+    'module_name': 'pm',#Specify the module name here
+	#you may override the variables found in node_module.gypi here or through command line
+  },
+  'targets': [
+    {
+	    # Needed declarations for the target
+	    'target_name': '<(module_name)',
+	    'product_name':'<(module_name)',
+		'sources': [ #Specify your source files here
+			"pm.cc",
+			"core/policymanager/PolicyManager.cpp",
+			"core/policymanager/Condition.cpp",
+			"core/policymanager/Globals.cpp",
+			"core/policymanager/IPolicyBase.cpp",
+			"core/policymanager/Policy.cpp",
+			"core/policymanager/PolicySet.cpp",
+			"core/policymanager/Request.cpp",
+			"core/policymanager/Rule.cpp",
+			"core/policymanager/Subject.cpp",
+			"core/policymanager/AuthorizationsSet.cpp",
+			"core/policymanager/DataHandlingPreferences.cpp",
+			"core/policymanager/Obligation.cpp",
+			"core/policymanager/ObligationsSet.cpp",
+			"core/policymanager/ProvisionalAction.cpp",
+			"core/policymanager/ProvisionalActions.cpp",
+			"core/policymanager/TriggersSet.cpp",
+			"core/common.cpp",
+			"../contrib/xmltools/tinyxml.cpp",
+			"../contrib/xmltools/slre.cpp",
+			"../contrib/xmltools/tinystr.cpp",
+			"../contrib/xmltools/tinyxmlparser.cpp",
+			"../contrib/xmltools/tinyxmlerror.cpp",
+		],
+		'include_dirs': [
+		   'core/policymanager',
+		   'core',
+		],
+    },
+    {
+    	    # Needed declarations for the target
+    	    'target_name': 'promptMan',
+    	    'product_name':'promptMan',
+    	    'conditions': [
+    			[ 'OS=="linux"', {
+    			  'sources': [
+    				'src/promptMan/promptMan.cc',
+    			  ],
+    			}],
+
+    			[ 'OS=="mac"', {
+    			  'sources': [
+    				'src/promptMan/promptMan_Darwin.cc',
+    			  ],
+    			}],
+
+    			[ 'OS=="win"', {
+    			  'sources': [
+    				'src/promptMan/promptMan_Win.cpp',
+    			  ],
+    			}],
+    		],
+    },
+    {
+        'target_name': 'webinos_wrt',
+        'type': 'none',
+        'toolsets': ['host'],
+        'copies': [
+          {
+            'files': [
+              'build/Release/pm.node',
+              'build/Release/promptMan.node',
+            ],
+            'destination': 'node_modules/',
+          }],
+        }, # end webinos_wrt
+  ] # end targets
+}
+
