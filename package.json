@@ -36,6 +36,6 @@
   ]
 , "scripts": {
     "install": "node-gyp configure build"
-,   "test": "jasmine-node ./test/jasmine ; jasmine-node ./test/jasmine.policy.tests.working"    
+,   "test": "cd ./test/jasmine ; jasmine-node . ; cd ../jasmine.policy.tests.working ; jasmine-node . "
   }
 }
