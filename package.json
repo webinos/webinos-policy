@@ -27,10 +27,15 @@
   , "xml2js" : "0.x.x"
   , "data2xml" : "0.8.x"
   }
+, "devDependencies" : 
+  {
+    "jasmine-node" : "1.x.x"
+  }  
 , "bundleDependencies":
   [
   ]
 , "scripts": {
     "install": "node-gyp configure build"
+,   "test": "jasmine-node ./test/jasmine ; jasmine-node ./test/jasmine.policy.tests.working"    
   }
 }
