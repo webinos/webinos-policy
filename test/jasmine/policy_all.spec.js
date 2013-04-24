@@ -18,7 +18,7 @@
 
 var pmlib;
 var fs = require("fs");
-var path = require("path")
+var path = require("path");
 var pm;
 var policyFile = "./policy.xml";
 
@@ -31,7 +31,7 @@ var featureList = [
 	"http://webinos.org/api/messaging.subscribe",
 	"http://webinos.org/api/nfc",
 	"http://webinos.org/api/nfc.read",
-    "http://cdi-api.org/test"   // example of third party API
+	"http://cdi-api.org/test"   // example of third party API
 	];
 
 
