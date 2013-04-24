@@ -30,7 +30,8 @@ var featureList = [
 	"http://webinos.org/api/messaging.send",
 	"http://webinos.org/api/messaging.subscribe",
 	"http://webinos.org/api/nfc",
-	"http://webinos.org/api/nfc.read"
+	"http://webinos.org/api/nfc.read",
+    "http://cdi-api.org/test"   // example of third party API
 	];
 
 
@@ -2445,6 +2446,40 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[24], userList[2], companyList[0], featureList[5], deviceList[0]);
+			expect(res).toEqual(0);
+		});
+
+	});
+
+	it("DHPref, allow third party API (default policy)", function() {
+
+		runs(function() {
+			var res = checkFeature(policyList[24], userList[0], companyList[0], featureList[8], deviceList[0]);
+			expect(res).toEqual(0);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[24], userList[0], companyList[0], featureList[8], deviceList[0]);
+			expect(res).toEqual(0);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[24], userList[1], companyList[0], featureList[8], deviceList[0]);
+			expect(res).toEqual(0);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[24], userList[1], companyList[0], featureList[8], deviceList[0]);
+			expect(res).toEqual(0);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[24], userList[2], companyList[0], featureList[8], deviceList[0]);
+			expect(res).toEqual(0);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[24], userList[2], companyList[0], featureList[8], deviceList[0]);
 			expect(res).toEqual(0);
 		});
 
