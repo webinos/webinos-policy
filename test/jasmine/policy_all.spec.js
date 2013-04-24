@@ -18,6 +18,7 @@
 
 var pmlib;
 var fs = require("fs");
+var path = require("path")
 var pm;
 var policyFile = "./policy.xml";
 
@@ -86,7 +87,7 @@ var policyList = [
 
 
 function loadManager() {
-	pmlib = require("../../lib/policymanager.js");
+	pmlib = require(path.join(__dirname, "../../lib/policymanager.js"));
 	pm = new pmlib.policyManager(policyFile);
 	return pm;
 }
@@ -94,7 +95,7 @@ function loadManager() {
 
 function changepolicy(fileName) {
 	console.log("Change policy to file "+fileName);
-	var data = fs.readFileSync("./"+fileName);
+	var data = fs.readFileSync(path.join(__dirname, fileName));
 	fs.writeFileSync(policyFile, data);
 }
 
