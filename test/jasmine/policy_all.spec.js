@@ -18,6 +18,7 @@
 
 var pmlib;
 var fs = require("fs");
+var path = require("path")
 var pm;
 var policyFile = "./policy.xml";
 
@@ -78,12 +79,15 @@ var policyList = [
 	"policy_dhp_9.xml",
 	"policy_dhp_10.xml",
 	"policy_dhp_11.xml",
-	"policy_dhp_12.xml"
+	"policy_dhp_12.xml",
+	"policy14.xml",
+	"policy15.xml",
+	"policy16.xml"
 	];
 
 
 function loadManager() {
-	pmlib = require("../../lib/policymanager.js");
+	pmlib = require(path.join(__dirname, "../../lib/policymanager.js"));
 	pm = new pmlib.policyManager(policyFile);
 	return pm;
 }
@@ -91,7 +95,7 @@ function loadManager() {
 
 function changepolicy(fileName) {
 	console.log("Change policy to file "+fileName);
-	var data = fs.readFileSync("./"+fileName);
+	var data = fs.readFileSync(path.join(__dirname, fileName));
 	fs.writeFileSync(policyFile, data);
 }
 
@@ -2445,5 +2449,30 @@ describe("Manager.PolicyManager", function() {
 		});
 
 	});
+
+	it("Empty policy set", function() {
+		runs(function() {
+			var res = checkFeature(policyList[25], userList[0], companyList[0], featureList[0], deviceList[0]);
+			expect(res).toEqual(6);
+		});
+
+	});
+
+	it("Empty policy", function() {
+		runs(function() {
+			var res = checkFeature(policyList[26], userList[0], companyList[0], featureList[0], deviceList[0]);
+			expect(res).toEqual(6);
+		});
+
+	});
+
+	it("Empty file", function() {
+		runs(function() {
+			var res = checkFeature(policyList[27], userList[0], companyList[0], featureList[0], deviceList[0]);
+			expect(res).toEqual(6);
+		});
+
+	});
+
 });
 
