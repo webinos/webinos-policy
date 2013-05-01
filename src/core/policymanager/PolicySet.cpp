@@ -216,7 +216,7 @@ Effect PolicySet::evaluatePolicies(Request* req, pair<string, bool>* selectedDHP
 Effect PolicySet::evaluate(Request * req, pair<string, bool>* selectedDHPref){
 	if(matchSubject(req)){
 		if(policies.size()==	0 && policysets.size()==0){
-			return PERMIT;
+			return INAPPLICABLE;
 		}
 		else{
 			return evaluatePolicies(req, selectedDHPref);	
