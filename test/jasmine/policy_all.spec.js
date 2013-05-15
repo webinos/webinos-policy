@@ -2500,7 +2500,7 @@ describe("Manager.PolicyManager", function() {
 		});
 
 	});
-
+/*
 	it("Empty file", function() {
 		runs(function() {
 			var res = checkFeature(policyList[27], userList[0], companyList[0], featureList[0], deviceList[0]);
@@ -2508,6 +2508,6 @@ describe("Manager.PolicyManager", function() {
 		});
 
 	});
-
+*/
 });
 
