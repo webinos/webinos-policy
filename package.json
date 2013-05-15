@@ -26,11 +26,11 @@
   , "sax" : "0.x.x"
   , "xml2js" : "0.x.x"
   , "data2xml" : "0.8.x"
-  , "webinos-utilities"  : "git://github.com/webinos/webinos-utilities.git"
   }
 , "devDependencies" : 
   {
     "jasmine-node" : "1.x.x"
+  , "webinos-utilities"  : "git://github.com/webinos/webinos-utilities.git"
   }  
 , "bundleDependencies":
   [
