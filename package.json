@@ -1,4 +1,4 @@
-{ "name": "policy_manager"
+{ "name": "webinos-policy"
 , "publishConfig": { "tag": "alpha" }
 , "description": "Policy Manager"
 , "keywords": [ "webinos", "policy", "manager"]
