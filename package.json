@@ -30,6 +30,7 @@
 , "devDependencies" : 
   {
     "jasmine-node" : "1.x.x"
+  , "webinos-utilities"  : "git://github.com/webinos/webinos-utilities.git"
   }  
 , "bundleDependencies":
   [
