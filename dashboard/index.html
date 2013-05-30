@@ -1,0 +1,128 @@
+<html>
+<head>
+<script type="text/javascript" src="/webinos.js"></script>
+<style>
+.promptLink
+{
+  padding: 4px;
+}
+#promptText
+{
+  padding: 10px;
+}
+</style>
+<script type="text/javascript">   
+  var token;
+	function checkWebinos() {
+
+		if (typeof webinos === "undefined") {
+			alert("webinos not loaded");
+		} 
+    
+		if (typeof window.widget === "undefined") {
+			alert("no widget interface");
+		} 
+	}
+	
+	var applauncherService;
+
+   function doLaunch2() {
+      var appURI = document.getElementById("appURI").value;
+      applauncherService.launchApplication(function(launched) { 
+        if (launched) { 
+          //alert("successCB - succeeded!");
+        } else { 
+          alert("successCB - failed"); 
+        }}, 
+        function(err){ 
+          alert("failed! " + err.message); 
+        }, appURI);        
+   }
+   
+   function doLaunch() {
+      var appURI = document.getElementById("appURI").value;
+      applauncherService.appInstalled(function(installed) { 
+        if (installed) { 
+          //alert("installed!"); 
+          setTimeout(doLaunch2,0);
+        } else {
+          alert("not installed!"); 
+        }}, function(err) { 
+          alert("error - " + err.message); 
+        }, appURI);		    
+   }
+   
+	function bindService() {
+		applauncherService.bindService({onBind: function(service) {
+			applauncherService = service;
+        doLaunch2();
+		}});
+	}
+
+	function findService() {
+		webinos.discovery.findServices(new ServiceType("http://webinos.org/api/applauncher"), {
+			onFound: function (service) {
+				applauncherService = service;
+				bindService();
+			},
+        onError: function(err) {
+          alert("findServices: " + err.name + " - " + err.message);
+			}
+		});
+	}
+		
+	function launchApp() {
+      checkWebinos();
+      applauncherService = null;
+      if (!applauncherService) {
+        findService(); 
+      } else {
+        doLaunch();
+      }
+      return false;
+	}
+  
+  function initialise() {
+    token = widget.args["prompt"];
+
+    var choicePrompts = [];
+    choicePrompts[0] = "Deny always";
+    choicePrompts[1] = "Deny for this session";
+    choicePrompts[2] = "Deny this time";
+    choicePrompts[3] = "Allow this time";
+    choicePrompts[4] = "Allow for this session";
+    choicePrompts[5] = "Allow always";
+
+    var choices = 0;
+    if (widget.args["choices"]) {
+      choices = widget.args["choices"].split("|");
+
+      for (var i = 0; i < choices.length; i++) {
+        var choice = choices[i];
+        var a = document.createElement("a");
+        a.href = "#";
+        a.addEventListener("click", function(reply) { return function() { promptReply(reply); return false; } }(choice), false);  
+        a.innerHTML = choicePrompts[choice];
+        a.className = "promptLink";
+        document.getElementById("prompts").appendChild(a);
+      }    
+    }   
+
+    document.getElementById("promptText").innerHTML = "User <strong>" + widget.args["user"] + "</strong> is requesting access to feature <strong>" + decodeURIComponent(widget.args["feature"]) + "</strong>";
+    setTimeout(function() { window.close(); } , widget.args["timeout"]);
+   }
+	
+  function promptReply(reply) {
+    window.location = "http://localhost:8080/promptReply?token=" + token + "&reply=" + reply;
+    setTimeout(function() { window.close(); }, 500);
+  }
+</script>
+</head>
+<body onload="initialise()">
+<h1>D A S H B O A R D</h1>
+<div id="promptText">
+</div>
+<div id="prompts">  
+</div>
+</body>
+</html>
