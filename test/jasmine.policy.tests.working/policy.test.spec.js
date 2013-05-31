@@ -120,21 +120,28 @@ function setRequest(userId, certCn, feature, deviceId, purpose, obligations) {
 	return req;
 }
 
+var TestWrapper = function () {
+  this.complete = false;
+  this.result = -1;
+};
+
 function checkFeature(policyName, userName, certName, featureName, deviceId, purpose, obligations) {
-	console.log(); 
-	changepolicy(policyName);
+  changepolicy(policyName);
+  pm = loadManager();
 
-	pm = loadManager();
+  var req = setRequest(userName, certName, featureName, deviceId, purpose, obligations);
 
-	var req = setRequest(userName, certName, featureName, deviceId, purpose, obligations);
+  var testWrap = new TestWrapper();
 
-// noprompt (third parameter) set to true
-	var res = pm.enforceRequest(req, 0, true);
-	console.log("result is "+ res + " (" + effTxt[res] +  ")");
-	console.log(); 
-	return res;
+  // noprompt (third parameter) set to true
+  pm.enforceRequest(req, 0, true, function(res) {
+    console.log("result is: " + res);
+    testWrap.result = res;
+    testWrap.complete = true;
+  });
+
+  return testWrap;
 }
-
 
 //enum Effect {PERMIT, DENY, PROMPT_ONESHOT, PROMPT_SESSION, PROMPT_BLANKET, UNDETERMINED, INAPPLICABLE};
 //               0       1         2               3               4              5             6
@@ -164,13 +171,13 @@ describe("Manager.PolicyManager", function() {
 	                var res = checkFeature(policyToTest, userName, certName, featureName, deviceId);
 				    
 				    //console.log("Policy " + policyToTest);	
-				    if(	res == expected){
-				    	console.log(policyToTest + "  result: " + effTxt[res] + " - " + effTxt[expected] + " :expected    -- OK" ); 
+				    if(	res.result == expected){
+				    	console.log(policyToTest + "  result: " + effTxt[res.result] + " - " + effTxt[expected] + " :expected    -- OK" );
 				    } 
 				    else{
-				    	console.log(">>> ERROR <<<  " + policyToTest + "  result: " + effTxt[res] + " - " + effTxt[expected] + " :expected    -- FAILED" );  	
+				    	console.log(">>> ERROR <<<  " + policyToTest + "  result: " + effTxt[res.result] + " - " + effTxt[expected] + " :expected    -- FAILED" );
 				    }
-				    expect(res).toEqual(expected);
+				    expect(res.result).toEqual(expected);
 				});   //runs
 	        });       //it
 	    })(testidx);  // function(idx)

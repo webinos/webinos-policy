@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>webinos permission request</title>
+   	<meta charset="utf-8">
+	<link rel="stylesheet" href="main.css">
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+</head>
+<body id="user-permissions-page">
+	<img class="webinoslogo" src="img/webinosWithBorder.png">
+	<div class="header">
+		<img src="img/webinosWithBorder.png">
+		<div class="title">REQUEST</div>
+		<div class="subtitle">Permission</div>
+	</div>
+
+	<div id="user-permission-list-container" class="content">
+		<div class="user-data">
+			<img src="img/userPlaceholder.png" id="newUserReqImg">
+			<h1 id="newUserReqName">Name</h1>
+			<h2>would like to access a service on your device</h2>
+		</div>
+		
+		<div class="permissions-controls" id="newUserReqButtons"></div>
+		<div class="button continueButton" id="newUserReqContinue">Continue</div>
+		<div class="info" id="newUserReqInfo">
+			<p>If you click <b>allow</b>, <span id="newUserReqNameInfo1">*Name*</span> will be able to *access* the service on your devices.</p>
+			<p>Click <b>deny</b> if you don't know who <span id="newUserReqNameInfo2">*Name*</span> is, or if you do not want him or her to access the service.</p>
+		</div>
+	</div>
+	
+	<script type="text/javascript" src="main.js"></script>
+</body>
+</html>
