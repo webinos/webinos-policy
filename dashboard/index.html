@@ -1,60 +1,34 @@
+<!DOCTYPE html>
 <html>
 <head>
-<script type="text/javascript" src="/webinos.js"></script>
-<style>
-.promptLink
-{
-  padding: 4px;
-}
-#promptText
-{
-  padding: 10px;
-}
-</style>
-<script type="text/javascript">   
-  var token;
-  
-  function initialise() {
-    token = widget.args["prompt"];
-
-    var choicePrompts = [];
-    choicePrompts[0] = "Deny always";
-    choicePrompts[1] = "Deny for this session";
-    choicePrompts[2] = "Deny this time";
-    choicePrompts[3] = "Allow this time";
-    choicePrompts[4] = "Allow for this session";
-    choicePrompts[5] = "Allow always";
-
-    var choices = 0;
-    if (widget.args["choices"]) {
-      choices = widget.args["choices"].split("|");
-
-      for (var i = 0; i < choices.length; i++) {
-        var choice = choices[i];
-        var a = document.createElement("a");
-        a.href = "#";
-        a.addEventListener("click", function(reply) { return function() { promptReply(reply); return false; } }(choice), false);  
-        a.innerHTML = choicePrompts[choice];
-        a.className = "promptLink";
-        document.getElementById("prompts").appendChild(a);
-      }    
-    }   
-
-    document.getElementById("promptText").innerHTML = "User <strong>" + widget.args["user"] + "</strong> is requesting access to feature <strong>" + decodeURIComponent(widget.args["feature"]) + "</strong>";
-    setTimeout(function() { window.close(); } , widget.args["timeout"]);
-   }
-	
-  function promptReply(reply) {
-    window.location = "http://localhost:8080/promptReply?token=" + token + "&reply=" + reply;
-    setTimeout(function() { window.close(); }, 500);
-  }
-</script>
+	<title>webinos permission request</title>
+   	<meta charset="utf-8">
+	<link rel="stylesheet" href="main.css">
+	<meta name="viewport" content="width=device-width, user-scalable=no">
 </head>
-<body onload="initialise()">
-<h1>D A S H B O A R D</h1>
-<div id="promptText">
-</div>
-<div id="prompts">  
-</div>
+<body id="user-permissions-page">
+	<img class="webinoslogo" src="img/webinosWithBorder.png">
+	<div class="header">
+		<img src="img/webinosWithBorder.png">
+		<div class="title">REQUEST</div>
+		<div class="subtitle">Permission</div>
+	</div>
+
+	<div id="user-permission-list-container" class="content">
+		<div class="user-data">
+			<img src="img/userPlaceholder.png" id="newUserReqImg">
+			<h1 id="newUserReqName">Name</h1>
+			<h2>would like to access a service on your device</h2>
+		</div>
+		
+		<div class="permissions-controls" id="newUserReqButtons"></div>
+		<div class="button continueButton" id="newUserReqContinue">Continue</div>
+		<div class="info" id="newUserReqInfo">
+			<p>If you click <b>allow</b>, <span id="newUserReqNameInfo1">*Name*</span> will be able to *access* the service on your devices.</p>
+			<p>Click <b>deny</b> if you don't know who <span id="newUserReqNameInfo2">*Name*</span> is, or if you do not want him or her to access the service.</p>
+		</div>
+	</div>
+	
+	<script type="text/javascript" src="main.js"></script>
 </body>
 </html>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <widget xmlns       = "http://www.w3.org/ns/widgets"
         id          = "http://webinos.org/dashboard"
-        version     = "0.1"
-        height      = "450"
-        width       = "500"
+        version     = "0.2"
+        height      = "500"
+        width       = "400"
         viewmodes   = "fullscreen">
 
     <name short="webinos dashboard" />
