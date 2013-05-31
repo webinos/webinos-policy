@@ -123,6 +123,10 @@ function setRequest(userId, certCn, feature, deviceId, purpose, obligations) {
 	return req;
 }
 
+var TestWrapper = function () {
+  this.complete = false;
+  this.result = -1;
+};
 
 function checkFeature(policyName, userName, certName, featureName, deviceId, purpose, obligations) {
 	changepolicy(policyName);
@@ -130,43 +134,55 @@ function checkFeature(policyName, userName, certName, featureName, deviceId, pur
 
 	var req = setRequest(userName, certName, featureName, deviceId, purpose, obligations);
 
+  var testWrap = new TestWrapper();
+
 	// noprompt (third parameter) set to true
-	var res = pm.enforceRequest(req, 0, true);
-	console.log("result is "+res);
-	return res;
+	pm.enforceRequest(req, 0, true, function(res) {
+    console.log("result is: " + res);
+    testWrap.result = res;
+    testWrap.complete = true;
+  });
+
+  return testWrap;
 }
 
 describe("Manager.PolicyManager", function() {
 
 	it("Every user can access every feature", function() {
-		runs(function() {
-			var res = checkFeature(policyList[0], userList[0], companyList[0], featureList[0], deviceList[0]);
-			expect(res).toEqual(4);
-		});
+
+    // Don't need to wait for completion as callback is called immediately for non-prompt requests.
+//    waitsFor(function() {
+//      return policyTest.complete;
+//    }, "Policy test timed out", 10000);
+
+    runs(function() {
+      var res = checkFeature(policyList[0], userList[0], companyList[0], featureList[0], deviceList[0]);
+      expect(res.result).toEqual(4);
+    });
 
 		runs(function() {
 			var res = checkFeature(policyList[0], userList[0], companyList[0], featureList[3], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[0], userList[1], companyList[0], featureList[1], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[0], userList[1], companyList[0], featureList[4], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[0], userList[2], companyList[0], featureList[2], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[0], userList[2], companyList[0], featureList[5], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 
@@ -175,32 +191,32 @@ describe("Manager.PolicyManager", function() {
 	it("Every feature is denied to every user", function() {
 		runs(function() {
 			var res = checkFeature(policyList[2], userList[0], companyList[0], featureList[2], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[2], userList[0], companyList[0], featureList[3], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[2], userList[1], companyList[0], featureList[4], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[2], userList[1], companyList[0], featureList[5], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[2], userList[2], companyList[0], featureList[6], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[2], userList[2], companyList[0], featureList[7], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 	});
@@ -208,32 +224,32 @@ describe("Manager.PolicyManager", function() {
 	it("user1 and user2 are allowed, user3 denied", function() {
 		runs(function() {
 			var res = checkFeature(policyList[1], userList[0], companyList[0], featureList[0], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[1], userList[0], companyList[0], featureList[1], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[1], userList[1], companyList[0], featureList[0], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[1], userList[1], companyList[0], featureList[1], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[1], userList[2], companyList[0], featureList[0], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[1], userList[2], companyList[0], featureList[1], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 	});
@@ -243,32 +259,32 @@ describe("Manager.PolicyManager", function() {
 	it("Test with generic uris (pzowner and pzfriend are allowed, untrusted user denied)", function() {
 		runs(function() {
 			var res = checkFeature(policyList[3], userList[0], companyList[0], featureList[0], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[3], userList[0], companyList[0], featureList[1], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[3], userList[1], companyList[0], featureList[0], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[3], userList[1], companyList[0], featureList[1], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[3], userList[2], companyList[0], featureList[0], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[3], userList[2], companyList[0], featureList[1], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 	});
@@ -277,52 +293,52 @@ describe("Manager.PolicyManager", function() {
 	it("Users mixed permissions", function() {
 		runs(function() {
 			var res = checkFeature(policyList[4], userList[0], companyList[0], featureList[0], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[4], userList[0], companyList[0], featureList[3], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[4], userList[0], companyList[0], featureList[6], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[4], userList[0], companyList[0], featureList[7], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[4], userList[0], companyList[0], featureList[1], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[4], userList[0], companyList[0], featureList[2], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[4], userList[0], companyList[0], featureList[4], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[4], userList[1], companyList[0], featureList[7], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[4], userList[1], companyList[0], featureList[6], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[4], userList[2], companyList[0], featureList[7], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 	});
@@ -331,17 +347,17 @@ describe("Manager.PolicyManager", function() {
 	it("Applications signed by Company1 are allowed, other denied", function() {
 		runs(function() {
 			var res = checkFeature(policyList[5], userList[0], companyList[0], featureList[0], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[5], userList[0], companyList[1], featureList[3], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[5], userList[0], companyList[2], featureList[4], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 	});
@@ -352,17 +368,17 @@ describe("Manager.PolicyManager", function() {
 	it("Test with generic uris (trusted app can access every feature, others are denied)", function() {
 		runs(function() {
 			var res = checkFeature(policyList[6], userList[0], companyList[0], featureList[0], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[6], userList[0], companyList[1], featureList[3], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[6], userList[0], companyList[2], featureList[4], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 	});
@@ -371,27 +387,27 @@ describe("Manager.PolicyManager", function() {
 	it("Applications mixed permissions", function() {
 		runs(function() {
 			var res = checkFeature(policyList[7], userList[0], companyList[0], featureList[1], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[7], userList[0], companyList[0], featureList[3], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[7], userList[0], companyList[1], featureList[0], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[7], userList[0], companyList[1], featureList[4], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[7], userList[0], companyList[2], featureList[0], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 	});
@@ -400,17 +416,17 @@ describe("Manager.PolicyManager", function() {
 	it("device1 is allowed, others are denied", function() {
 		runs(function() {
 			var res = checkFeature(policyList[8], userList[0], companyList[0], featureList[1], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[8], userList[0], companyList[0], featureList[4], deviceList[1]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[8], userList[0], companyList[0], featureList[0], deviceList[1]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 	});
@@ -421,17 +437,17 @@ describe("Manager.PolicyManager", function() {
 	it("test with generic uris (device from pz is allowed, others are denied)", function() {
 		runs(function() {
 			var res = checkFeature(policyList[9], userList[0], companyList[0], featureList[1], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[9], userList[0], companyList[0], featureList[5], deviceList[1]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[9], userList[0], companyList[0], featureList[4], deviceList[2]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 	});
@@ -440,17 +456,17 @@ describe("Manager.PolicyManager", function() {
 	it("test with generic uris (mobile device is allowed, others are denied)", function() {
 		runs(function() {
 			var res = checkFeature(policyList[10], userList[0], companyList[0], featureList[0], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[10], userList[0], companyList[0], featureList[2], deviceList[1]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[10], userList[0], companyList[0], featureList[5], deviceList[2]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 	});
@@ -459,27 +475,27 @@ describe("Manager.PolicyManager", function() {
 	it("Device mixed permissions", function() {
 		runs(function() {
 			var res = checkFeature(policyList[11], userList[0], companyList[0], featureList[1], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[11], userList[0], companyList[0], featureList[3], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[11], userList[0], companyList[0], featureList[0], deviceList[1]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[11], userList[0], companyList[0], featureList[4], deviceList[1]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[11], userList[0], companyList[0], featureList[0], deviceList[2]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 	});
@@ -488,62 +504,62 @@ describe("Manager.PolicyManager", function() {
 	it("mixed policy", function() {
 		runs(function() {
 			var res = checkFeature(policyList[12], userList[0], companyList[0], featureList[0], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[12], userList[0], companyList[1], featureList[4], deviceList[2]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[12], userList[0], companyList[0], featureList[4], deviceList[1]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[12], userList[1], companyList[0], featureList[3], deviceList[1]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[12], userList[1], companyList[0], featureList[1], deviceList[0]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[12], userList[1], companyList[1], featureList[0], deviceList[1]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[12], userList[1], companyList[0], featureList[6], deviceList[2]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[12], userList[1], companyList[0], featureList[4], deviceList[1]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[12], userList[2], companyList[2], featureList[1], deviceList[2]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[12], userList[2], companyList[0], featureList[7], deviceList[0]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[12], userList[2], companyList[0], featureList[0], deviceList[1]);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[12], userList[2], companyList[1], featureList[4], deviceList[1]);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 	});
@@ -591,32 +607,32 @@ describe("Manager.PolicyManager", function() {
 			];
 		runs(function() {
 			var res = checkFeature(policyList[13], userList[0], companyList[0], featureList[0], deviceList[0], purpose);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[13], userList[0], companyList[0], featureList[3], deviceList[0], purpose);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[13], userList[1], companyList[0], featureList[1], deviceList[0], purpose);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[13], userList[1], companyList[0], featureList[4], deviceList[0], purpose);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[13], userList[2], companyList[0], featureList[2], deviceList[0], purpose);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[13], userList[2], companyList[0], featureList[5], deviceList[0], purpose);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 	});
@@ -661,32 +677,32 @@ describe("Manager.PolicyManager", function() {
 			];
 		runs(function() {
 			var res = checkFeature(policyList[14], userList[0], companyList[0], featureList[2], deviceList[0], purpose);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[14], userList[0], companyList[0], featureList[3], deviceList[0], purpose);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[14], userList[1], companyList[0], featureList[4], deviceList[0], purpose);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[14], userList[1], companyList[0], featureList[5], deviceList[0], purpose);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[14], userList[2], companyList[0], featureList[6], deviceList[0], purpose);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[14], userList[2], companyList[0], featureList[7], deviceList[0], purpose);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 	});
 
@@ -730,32 +746,32 @@ describe("Manager.PolicyManager", function() {
 			];
 		runs(function() {
 			var res = checkFeature(policyList[15], userList[0], companyList[0], featureList[0], deviceList[0], purpose);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[15], userList[0], companyList[0], featureList[1], deviceList[0], purpose);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[15], userList[1], companyList[0], featureList[0], deviceList[0], purpose);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[15], userList[1], companyList[0], featureList[1], deviceList[0], purpose);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[15], userList[2], companyList[0], featureList[0], deviceList[0], purpose);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[15], userList[2], companyList[0], featureList[1], deviceList[0], purpose);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 	});
@@ -800,52 +816,52 @@ describe("Manager.PolicyManager", function() {
 			];
 		runs(function() {
 			var res = checkFeature(policyList[16], userList[0], companyList[0], featureList[0], deviceList[0], purpose);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[16], userList[0], companyList[0], featureList[3], deviceList[0], purpose);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[16], userList[0], companyList[0], featureList[6], deviceList[0], purpose);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[16], userList[0], companyList[0], featureList[7], deviceList[0], purpose);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[16], userList[0], companyList[0], featureList[1], deviceList[0], purpose);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[16], userList[0], companyList[0], featureList[2], deviceList[0], purpose);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[16], userList[0], companyList[0], featureList[4], deviceList[0], purpose);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[16], userList[1], companyList[0], featureList[7], deviceList[0], purpose);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[16], userList[1], companyList[0], featureList[6], deviceList[0], purpose);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[16], userList[2], companyList[0], featureList[7], deviceList[0], purpose);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 	});
 
@@ -889,62 +905,62 @@ describe("Manager.PolicyManager", function() {
 			];
 		runs(function() {
 			var res = checkFeature(policyList[17], userList[0], companyList[0], featureList[0], deviceList[0], purpose);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[17], userList[0], companyList[1], featureList[4], deviceList[2], purpose);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[17], userList[0], companyList[0], featureList[4], deviceList[1], purpose);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[17], userList[1], companyList[0], featureList[3], deviceList[1], purpose);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[17], userList[1], companyList[0], featureList[1], deviceList[0], purpose);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[17], userList[1], companyList[1], featureList[0], deviceList[1], purpose);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[17], userList[1], companyList[0], featureList[6], deviceList[2], purpose);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[17], userList[1], companyList[0], featureList[4], deviceList[1], purpose);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[17], userList[2], companyList[2], featureList[1], deviceList[2], purpose);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[17], userList[2], companyList[0], featureList[7], deviceList[0], purpose);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[17], userList[2], companyList[0], featureList[0], deviceList[1], purpose);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[17], userList[2], companyList[1], featureList[4], deviceList[1], purpose);
-			expect(res).toEqual(1);
+			expect(res.result).toEqual(1);
 		});
 	});
 
@@ -1009,7 +1025,7 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[18], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 	});
@@ -1074,7 +1090,7 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[18], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 	});
@@ -1138,7 +1154,7 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[19], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 	});
@@ -1203,7 +1219,7 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[19], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 	});
@@ -1308,7 +1324,7 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[20], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 	});
@@ -1413,7 +1429,7 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[20], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 	});
@@ -1518,7 +1534,7 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[20], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 	});
@@ -1623,7 +1639,7 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[20], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 	});
@@ -1728,7 +1744,7 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[20], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 	});
@@ -1833,7 +1849,7 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[20], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 	});
@@ -1897,7 +1913,7 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[21], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 	});
@@ -1961,7 +1977,7 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[21], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 	});
@@ -2025,7 +2041,7 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[21], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 	});
@@ -2089,7 +2105,7 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[21], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 	});
@@ -2153,7 +2169,7 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[22], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 	});
@@ -2217,7 +2233,7 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[22], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 	});
@@ -2281,7 +2297,7 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[22], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 	});
@@ -2345,7 +2361,7 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[22], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 	});
@@ -2408,12 +2424,12 @@ describe("Manager.PolicyManager", function() {
 		};
 		runs(function() {
 			var res = checkFeature(policyList[23], userList[0], companyList[0], featureList[1], deviceList[0], purpose, obligations);
-			expect(res).toEqual(4);
+			expect(res.result).toEqual(4);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[23], userList[0], companyList[0], featureList[2], deviceList[0], purpose, obligations);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 	});
 
@@ -2421,32 +2437,32 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[24], userList[0], companyList[0], featureList[0], deviceList[0]);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[24], userList[0], companyList[0], featureList[3], deviceList[0]);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[24], userList[1], companyList[0], featureList[1], deviceList[0]);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[24], userList[1], companyList[0], featureList[4], deviceList[0]);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[24], userList[2], companyList[0], featureList[2], deviceList[0]);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[24], userList[2], companyList[0], featureList[5], deviceList[0]);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 	});
@@ -2455,32 +2471,32 @@ describe("Manager.PolicyManager", function() {
 
 		runs(function() {
 			var res = checkFeature(policyList[24], userList[0], companyList[0], featureList[8], deviceList[0]);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[24], userList[0], companyList[0], featureList[8], deviceList[0]);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[24], userList[1], companyList[0], featureList[8], deviceList[0]);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[24], userList[1], companyList[0], featureList[8], deviceList[0]);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[24], userList[2], companyList[0], featureList[8], deviceList[0]);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 		runs(function() {
 			var res = checkFeature(policyList[24], userList[2], companyList[0], featureList[8], deviceList[0]);
-			expect(res).toEqual(0);
+			expect(res.result).toEqual(0);
 		});
 
 	});
@@ -2488,7 +2504,7 @@ describe("Manager.PolicyManager", function() {
 	it("Empty policy set", function() {
 		runs(function() {
 			var res = checkFeature(policyList[25], userList[0], companyList[0], featureList[0], deviceList[0]);
-			expect(res).toEqual(6);
+			expect(res.result).toEqual(6);
 		});
 
 	});
@@ -2496,7 +2512,7 @@ describe("Manager.PolicyManager", function() {
 	it("Empty policy", function() {
 		runs(function() {
 			var res = checkFeature(policyList[26], userList[0], companyList[0], featureList[0], deviceList[0]);
-			expect(res).toEqual(6);
+			expect(res.result).toEqual(6);
 		});
 
 	});
@@ -2504,7 +2520,7 @@ describe("Manager.PolicyManager", function() {
 	it("Empty file", function() {
 		runs(function() {
 			var res = checkFeature(policyList[27], userList[0], companyList[0], featureList[0], deviceList[0]);
-			expect(res).toEqual(6);
+			expect(res.result).toEqual(6);
 		});
 
 	});
