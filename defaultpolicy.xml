@@ -1,5 +1,5 @@
-<policy combine="first-applicable" description="catch">
-	<rule effect="permit"></rule>
+<policy id="p1" combine="first-applicable" description="catch">
+	<rule id="r1" effect="permit"></rule>
 	<DataHandlingPreferences PolicyId="#DHP_allow_all">
 		<AuthorizationsSet>
 			<AuthzUseForPurpose>
