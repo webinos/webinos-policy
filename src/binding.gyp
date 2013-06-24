@@ -69,8 +69,8 @@
         'copies': [
           {
             'files': [
-              'build/Release/pm.node',
-              'build/Release/promptMan.node',
+              'build/$(CONFIGURATION)/pm.node',
+              'build/$(CONFIGURATION)/promptMan.node',
             ],
             'destination': 'node_modules/',
           }],

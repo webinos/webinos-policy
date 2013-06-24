@@ -28,7 +28,7 @@
     'copies': [
       {
         'files': [
-          'build/Release/certificate_manager.node',
+          'build/$(CONFIGURATION)/certificate_manager.node',
         ],
         'destination': 'node_modules/',
       }],
