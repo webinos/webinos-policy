@@ -1,7 +1,6 @@
 {
   'variables': {
     'module_name': 'pm',#Specify the module name here
-    #you may override the variables found in node_module.gypi here or through command line
   },
   'targets': [
     {
@@ -69,8 +68,8 @@
         'copies': [
           {
             'files': [
-              'build/Release/pm.node',
-              'build/Release/promptMan.node',
+              '<(PRODUCT_DIR)/pm.node',
+              '<(PRODUCT_DIR)/promptMan.node',
             ],
             'destination': 'node_modules/',
           }],
