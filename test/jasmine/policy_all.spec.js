@@ -2505,7 +2505,7 @@ describe("Manager.PolicyManager", function() {
 	it("Empty policy set", function() {
 		runs(function() {
 			var res = checkFeature(policyList[25], userList[0], companyList[0], featureList[0], deviceList[0]);
-			expect(res.result).toEqual(0);
+			expect(res.result).toEqual(1);
 		});
 
 	});
@@ -2513,7 +2513,7 @@ describe("Manager.PolicyManager", function() {
 	it("Empty policy", function() {
 		runs(function() {
 			var res = checkFeature(policyList[26], userList[0], companyList[0], featureList[0], deviceList[0]);
-			expect(res.result).toEqual(0);
+			expect(res.result).toEqual(1);
 		});
 
 	});
