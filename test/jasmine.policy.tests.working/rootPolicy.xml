@@ -1,0 +1,12 @@
+<!DOCTYPE doc [
+<!ENTITY manufacturer SYSTEM ./manufacturer.xml>
+<!ENTITY user SYSTEM ./policy.xml>
+<!ENTITY app SYSTEM ./app.xml>
+]>
+<policy-set combining-algorithm="Deny-unless-permit-or-prompt">
+<policy-set combining-algorithm="Deny-overrides">
+    &manufacturer;
+    &user;
+    &app;
+</policy-set>
+</policy-set>

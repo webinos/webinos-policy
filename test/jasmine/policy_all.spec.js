@@ -20,7 +20,8 @@ var pmlib;
 var fs = require("fs");
 var path = require("path");
 var pm;
-var policyFile = "./policy.xml";
+var userPolicyFile = "./policy.xml";
+var rootPolicyFile = './rootPolicy.xml';
 
 var featureList = [
 	"http://webinos.org/api/discovery",
@@ -89,7 +90,7 @@ var policyList = [
 
 function loadManager() {
 	pmlib = require(path.join(__dirname, "../../lib/policymanager.js"));
-	pm = new pmlib.policyManager(policyFile);
+	pm = new pmlib.policyManager(rootPolicyFile);
 	return pm;
 }
 
@@ -97,7 +98,7 @@ function loadManager() {
 function changepolicy(fileName) {
 	console.log("Change policy to file "+fileName);
 	var data = fs.readFileSync(path.join(__dirname, fileName));
-	fs.writeFileSync(policyFile, data);
+	fs.writeFileSync(userPolicyFile, data);
 }
 
 
@@ -2504,7 +2505,7 @@ describe("Manager.PolicyManager", function() {
 	it("Empty policy set", function() {
 		runs(function() {
 			var res = checkFeature(policyList[25], userList[0], companyList[0], featureList[0], deviceList[0]);
-			expect(res.result).toEqual(6);
+			expect(res.result).toEqual(1);
 		});
 
 	});
@@ -2512,7 +2513,7 @@ describe("Manager.PolicyManager", function() {
 	it("Empty policy", function() {
 		runs(function() {
 			var res = checkFeature(policyList[26], userList[0], companyList[0], featureList[0], deviceList[0]);
-			expect(res.result).toEqual(6);
+			expect(res.result).toEqual(1);
 		});
 
 	});
