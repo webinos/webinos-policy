@@ -3,7 +3,8 @@ var request = require("http");
 var pmlib; 
 var fs = require("fs"); 
 var pm ; 
-var policyFile = "./policy.xml"; 
+var userPolicyFile = "./policy.xml"; 
+var rootPolicyFile = "./rootPolicy.xml"; 
 					   
 //	"http://webinos.org/api/discovery",
 //	"http://webinos.org/api/w3c/geolocation",
@@ -23,9 +24,9 @@ var tests = [
 	["Test Allow All 2", 4, "policy-allow-all.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device1"],               // PERMIT -> BLANKET PROMPT
 	
 	["Test First Applicable 1", 4, "policy-first-1.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device1"],          // PERMIT -> BLANKET PROMPT
-	["Test First Applicable 2", 6, "policy-first-1.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],          // INAPPLICABLE
+	["Test First Applicable 2", 1, "policy-first-1.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],          // DENY
 	["Test First Applicable 3", 1, "policy-first-2.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device1"],          // DENY
-	["Test First Applicable 4", 6, "policy-first-2.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],          // INAPPLICABLE  
+	["Test First Applicable 4", 1, "policy-first-2.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],          // DENY  
 	
 	["Test Permit Overrides 1", 4, "policy-permit-1.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device1"],         // PERMIT -> BLANKET PROMPT
 	["Test Permit Overrides 2", 1, "policy-permit-1.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],         // DENY
@@ -38,27 +39,27 @@ var tests = [
 	
 //	["Test Locic 1", 6, "policy-logic-1.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device1"],
 //	["Test Locic 2", 6, "policy-logic-1.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
-	["Test Locic 3", 4, "policy-logic-1.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
+	["Test Locic 3", 1, "policy-logic-1.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
 	
 //	["Test Locic 4", 6, "policy-logic-3.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device1"],
 //	["Test Locic 5", 6, "policy-logic-3.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
-	["Test Locic 6", 4, "policy-logic-3.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
+	["Test Locic 6", 1, "policy-logic-3.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
 	
 //	["Test Locic 7", 6, "policy-logic-4.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device1"],
 //	["Test Locic 8", 6, "policy-logic-4.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
-	["Test Locic 9", 4, "policy-logic-4.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
+	["Test Locic 9", 1, "policy-logic-4.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
 	
 //	["Test Locic 10", 6, "policy-logic-5.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device1"],
 //	["Test Locic 11", 6, "policy-logic-5.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
 	["Test Locic 12", 4, "policy-logic-5.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
 		
-	["Test Locic 13", 6, "policy-logic-6.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device1"],
-	["Test Locic 14", 6, "policy-logic-6.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
-	["Test Locic 15", 6, "policy-logic-6.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
+	["Test Locic 13", 1, "policy-logic-6.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device1"],
+	["Test Locic 14", 1, "policy-logic-6.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
+	["Test Locic 15", 1, "policy-logic-6.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
 		
-	["Test Locic 16", 6, "policy-logic-7.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device1"],
-	["Test Locic 17", 6, "policy-logic-7.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
-	["Test Locic 18", 6, "policy-logic-7.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
+	["Test Locic 16", 1, "policy-logic-7.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device1"],
+	["Test Locic 17", 1, "policy-logic-7.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
+	["Test Locic 18", 1, "policy-logic-7.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
 		
 //	["Test Locic 19", 6, "policy-logic-8.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
 //	["Test Locic 20", 6, "policy-logic-8.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
@@ -66,18 +67,18 @@ var tests = [
 		
 //	["Test Locic 22", 4, "policy-logic-9.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
 //	["Test Locic 23", 4, "policy-logic-9.xml", "user2", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
-	["Test Locic 24", 6, "policy-logic-9.xml", "user3", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
+	["Test Locic 24", 1, "policy-logic-9.xml", "user3", "cert1", "http://webinos.org/api/w3c/geolocation", "device2"],
 	
 //	["Test Manufacturer 1", 4, "policy-manufacturer-1.xml", "user1", "cert1", "http://webinos.org/api/w3c/geolocation", "device1"],
 //	["Test Manufacturer 2", 1, "policy-manufacturer-1.xml", "user1", "cert2", "http://mega.org/api/secret1", "device1"],
 //	["Test Manufacturer 3", 4, "policy-manufacturer-1.xml", "user1", "cert2", "http://mega.org/api/open1", "device1"],
 //	["Test Manufacturer 4", 1, "policy-manufacturer-1.xml", "user2", "cert2", "http://mega.org/api/open1", "device1"],
-	["Test Manufacturer 5", 6, "policy-manufacturer-1.xml", "user3", "cert2", "http://mega.org/api/open1", "device1"],
+	["Test Manufacturer 5", 1, "policy-manufacturer-1.xml", "user3", "cert2", "http://mega.org/api/open1", "device1"],
 //	["Test Manufacturer 6", 4, "policy-manufacturer-1.xml", "user3", "cert2", "http://webinos.org/api/w3c/geolocation", "device1"],
 //	["Test Manufacturer 7", 4, "policy-manufacturer-1.xml", "user2", "cert2", "http://webinos.org/api/messaging.send", "device3"],
 //  ["Test Manufacturer 8", 4, "policy-manufacturer-1.xml", "user3", "cert2", "http://webinos.org/api/w3c/geolocation", "device2"],
 //    ["Test Manufacturer 9", 4, "policy-manufacturer-1.xml", "user2", "cert2", "http://webinos.org/api/w3c/geolocation", "device2"],
-	["Test Manufacturer 10", 6, "policy-manufacturer-1.xml", "user4", "cert2", "http://webinos.org/api/w3c/geolocation", "device2"]
+	["Test Manufacturer 10", 1, "policy-manufacturer-1.xml", "user4", "cert2", "http://webinos.org/api/w3c/geolocation", "device2"]
 	
 	
 		
@@ -86,7 +87,7 @@ var tests = [
 
 function loadManager() {
 	pmlib = require("../../lib/policymanager.js");
-	pm = new pmlib.policyManager(policyFile);
+	pm = new pmlib.policyManager(rootPolicyFile);
 	return pm;
 }
 
@@ -94,7 +95,7 @@ function loadManager() {
 function changepolicy(fileName) {
 	console.log("Change policy to file "+fileName);
 	var data = fs.readFileSync("./"+fileName);
-	fs.writeFileSync(policyFile, data);
+	fs.writeFileSync(userPolicyFile, data);
 }
 
 
