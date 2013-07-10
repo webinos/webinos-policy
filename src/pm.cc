@@ -536,15 +536,29 @@ public:
 //		(*environment)["roaming"] = roam;
 		
 //		Request* myReq = new Request(widPath, *resource_attrs, *environment);
-		Request* myReq = new Request(*subject_attrs, *resource_attrs, purpose, obs);
+		if( args.Length()>1 && args[1]->IsObject()){
+				Request* myReq = new Request(*subject_attrs, *resource_attrs, purpose, obs);
+				string psd;
+				Effect myEff = pmtmp->pminst->checkRequest(myReq, psd);
+				LOGD("[pm.cc]PATH: %s", psd.c_str());
+				args[1]->ToObject()->Set(String::New("path"), String::New(psd.c_str()));
+				//enum Effect {PERMIT, DENY, PROMPT_ONESHOT, PROMPT_SESSION, PROMPT_BLANKET, UNDETERMINED, INAPPLICABLE};
+	
+				Local<Integer> result = Integer::New(myEff);
+			
+				return scope.Close(result);
+		}
+		else{
+			Request* myReq = new Request(*subject_attrs, *resource_attrs, purpose, obs);
 		
-		Effect myEff = pmtmp->pminst->checkRequest(myReq);
+			Effect myEff = pmtmp->pminst->checkRequest(myReq);
 
-		//enum Effect {PERMIT, DENY, PROMPT_ONESHOT, PROMPT_SESSION, PROMPT_BLANKET, UNDETERMINED, INAPPLICABLE};
+			//enum Effect {PERMIT, DENY, PROMPT_ONESHOT, PROMPT_SESSION, PROMPT_BLANKET, UNDETERMINED, INAPPLICABLE};
 
-		Local<Integer> result = Integer::New(myEff);
+			Local<Integer> result = Integer::New(myEff);
 		
-		return scope.Close(result);
+			return scope.Close(result);
+		}
 	}
 
 	

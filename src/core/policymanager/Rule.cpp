@@ -24,6 +24,7 @@ Rule::Rule(TiXmlElement* rule, DHPrefs* dhp)
 	:datahandlingpreferences(dhp)
 {
 	effect = (rule->Attribute("effect") != NULL) ? string2effect(rule->Attribute("effect")) : UNDETERMINED;
+	id = (rule->Attribute("id") != NULL) ? rule->Attribute("id") : "-1";
 	if(rule->FirstChild("condition")){
 		condition = new Condition((TiXmlElement*)rule->FirstChild("condition"));
 	}

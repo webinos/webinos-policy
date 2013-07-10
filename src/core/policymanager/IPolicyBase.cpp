@@ -49,7 +49,9 @@ bool IPolicyBase::matchSubject(Request*){
 Effect IPolicyBase::evaluate(Request*, pair<string, bool>*){
 	return DENY;
 }
-
+Effect IPolicyBase::evaluate(Request*, pair<string, bool>*, IPolicyBaseDescriptor*&){
+	return DENY;
+}
 PolicyType IPolicyBase::get_iType(){
 	return POLICY_SET;
 }
