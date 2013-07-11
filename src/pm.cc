@@ -541,6 +541,7 @@ public:
 
 		if (args[0]->ToObject()->Has(String::New("environmentInfo"))) {
 			v8::Local<Value> eiTmp = args[0]->ToObject()->Get(String::New("environmentInfo"));
+			/*
 			if (eiTmp->ToObject()->Has(String::New("roaming"))) {
 				v8::String::AsciiValue roaming(eiTmp->ToObject()->Get(String::New("roaming")));
 				(*environment_attrs)["roaming"] = *roaming;
@@ -551,6 +552,7 @@ public:
 				(*environment_attrs)["bearer-type"] = *bearerType;
 				LOGD("Parameter bearer-type : %s", *bearerType);
 			}
+			*/
 			if (eiTmp->ToObject()->Has(String::New("profile"))) {
 				v8::String::AsciiValue profile(eiTmp->ToObject()->Get(String::New("profile")));
 				(*environment_attrs)["profile"] = *profile;
