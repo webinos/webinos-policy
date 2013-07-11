@@ -181,6 +181,10 @@ ConditionResponse Condition::evaluateEnvironment(Request* req){
 		? it->second 
 		: vector<match_info_str*>();
 	
+	vector<match_info_str *> my_profile_vet = (it = environment_attrs.find("profile"))!=environment_attrs.end() 
+		? it->second 
+		: vector<match_info_str*>();
+	
 	if(combine == OR){
 		LOGD("[ENVIRONMENT] dentro OR");
 		if(my_roaming != NULL){
@@ -195,6 +199,11 @@ ConditionResponse Condition::evaluateEnvironment(Request* req){
 		string req_bearer = requestEnvironment_attrs["bearer-type"];
 		for(unsigned int j=0; j<my_bearer_vet.size(); j++){
 			if(equals(req_bearer, my_bearer_vet[j]->value, string2strcmp_mode(my_bearer_vet[j]->equal_func)))
+				return MATCH;
+		}
+		string req_profile = requestEnvironment_attrs["profile"];
+		for(unsigned int j=0; j<my_profile_vet.size(); j++){
+			if(equals(req_profile, my_profile_vet[j]->value, string2strcmp_mode(my_profile_vet[j]->equal_func)))
 				return MATCH;
 		}
 		return NO_MATCH;
@@ -214,6 +223,11 @@ ConditionResponse Condition::evaluateEnvironment(Request* req){
 		string req_bearer = requestEnvironment_attrs["bearer-type"];
 		for(unsigned int j=0; j<my_bearer_vet.size(); j++){
 			if(!equals(req_bearer, my_bearer_vet[j]->value, string2strcmp_mode(my_bearer_vet[j]->equal_func)))
+				return NO_MATCH;
+		}
+		string req_profile = requestEnvironment_attrs["profile"];
+		for(unsigned int j=0; j<my_profile_vet.size(); j++){
+			if(!equals(req_profile, my_profile_vet[j]->value, string2strcmp_mode(my_profile_vet[j]->equal_func)))
 				return NO_MATCH;
 		}
 		return MATCH;
