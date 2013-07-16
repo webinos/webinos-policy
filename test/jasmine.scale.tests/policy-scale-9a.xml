@@ -1,0 +1,334 @@
+<policy-set combine="first-matching-target" description="test prompt priority">
+	<policy-set combine="first-matching-target" description="user Policy">
+		<policy combine="first-applicable" description="p1">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user1"/>
+				</subject>
+			</target>
+			
+			<rule effect="permit"/>
+		</policy>
+		
+		<policy combine="deny-overrides" description="p2">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user2"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+		
+		<policy combine="deny-overrides" description="p3">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user3"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+
+		<policy combine="deny-overrides" description="p4">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user4"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+		<policy combine="deny-overrides" description="p2">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user2"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+		
+		<policy combine="deny-overrides" description="p3">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user3"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+
+		<policy combine="deny-overrides" description="p4">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user4"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+<policy combine="deny-overrides" description="p2">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user2"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+		
+		<policy combine="deny-overrides" description="p3">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user3"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+
+		<policy combine="deny-overrides" description="p4">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user4"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+<policy combine="deny-overrides" description="p2">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user2"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+		
+		<policy combine="deny-overrides" description="p3">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user3"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+
+		<policy combine="deny-overrides" description="p4">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user4"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+<policy combine="deny-overrides" description="p2">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user2"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+		
+		<policy combine="deny-overrides" description="p3">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user3"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+
+		<policy combine="deny-overrides" description="p4">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user4"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+<policy combine="deny-overrides" description="p2">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user2"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+		
+		<policy combine="deny-overrides" description="p3">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user3"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+
+		<policy combine="deny-overrides" description="p4">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user4"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+<policy combine="deny-overrides" description="p2">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user2"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+		
+		<policy combine="deny-overrides" description="p3">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user3"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+
+		<policy combine="deny-overrides" description="p4">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user4"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+<policy combine="deny-overrides" description="p2">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user2"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+		
+		<policy combine="deny-overrides" description="p3">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user3"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+
+		<policy combine="deny-overrides" description="p4">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user4"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+<policy combine="deny-overrides" description="p2">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user2"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+		
+		<policy combine="deny-overrides" description="p3">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user3"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+
+		<policy combine="deny-overrides" description="p4">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user4"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+<policy combine="deny-overrides" description="p2">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user2"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+		
+		<policy combine="deny-overrides" description="p3">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user3"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+
+		<policy combine="deny-overrides" description="p4">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user4"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+<policy combine="deny-overrides" description="p2">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user2"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+		
+		<policy combine="deny-overrides" description="p3">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user3"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+
+		<policy combine="deny-overrides" description="p4">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user4"/>
+				</subject>
+			</target>
+			
+			<rule effect="deny"/>
+		</policy>
+	</policy-set>
+
+</policy-set>
