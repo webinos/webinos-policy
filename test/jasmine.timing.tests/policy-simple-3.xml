@@ -1,0 +1,26 @@
+<policy-set combine="deny-overrides" description="test prompt priority">
+	
+
+	<policy-set combine="deny-overrides" description="user Policy">
+
+
+		<policy combine="deny-overrides" description="p5">
+			<target>
+				<subject>
+					<subject-match attr="requestor-id" match="device2"/>
+				</subject>
+			</target>
+			
+			<rule effect="permit">
+					<condition combine="and">
+						<resource-match attr="api-feature" match="http://mega.org/api/secret1"/>
+						<subject-match attr="user-id" match="user1"/>
+					</condition>
+				
+			</rule>
+		</policy>
+
+	</policy-set>
+	
+
+</policy-set>

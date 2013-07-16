@@ -1,0 +1,47 @@
+<policy-set combine="deny-overrides" description="test prompt priority">
+	
+	<policy-set combine="deny-overrides" description="Manufacturer1">
+		<policy combine="deny-overrides" description="p1">
+			<target>
+				<subject>
+					<subject-match attr="distributor-key-cn" match="cert2"/>
+				</subject>
+			</target>
+			<rule effect="permit" />
+		</policy>
+		
+		<policy combine="deny-overrides" description="p1">
+			<rule effect="deny">
+				<condition combine="or">
+					<resource-match attr="api-feature" match="http://mega.org/api/secret1"/>
+					<resource-match attr="api-feature" match="http://mega.org/api/api/secet2"/>
+				</condition>
+			</rule>
+			
+		</policy>
+
+	</policy-set>
+
+	<policy-set combine="deny-overrides" description="user Policy">
+
+
+		<policy combine="deny-overrides" description="p5">
+			<target>
+				<subject>
+					<subject-match attr="requestor-id" match="device2"/>
+				</subject>
+			</target>
+			
+			<rule effect="permit">
+					<condition combine="and">
+						<resource-match attr="api-feature" match="http://mega.org/api/secret1"/>
+						
+					</condition>
+				
+			</rule>
+		</policy>
+
+	</policy-set>
+	
+
+</policy-set>
