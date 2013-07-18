@@ -158,6 +158,13 @@ ConditionResponse Condition::evaluate(Request * req){
 			return MATCH;
 		else if (tmpCR == NOT_DETERMINED)
 			anyUndetermined = true;
+
+		tmpCR = evaluateEnvironment(req);
+		LOGD("[ENV EVAL OR] %d",tmpCR);
+		if (tmpCR == MATCH)
+			return MATCH;
+		else if (tmpCR == NOT_DETERMINED)
+			anyUndetermined = true;
 		
 		if (anyUndetermined)
 			return NOT_DETERMINED;
