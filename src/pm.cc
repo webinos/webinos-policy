@@ -536,7 +536,31 @@ public:
 //		(*environment)["roaming"] = roam;
 		
 //		Request* myReq = new Request(widPath, *resource_attrs, *environment);
-		Request* myReq = new Request(*subject_attrs, *resource_attrs, purpose, obs);
+
+		map<string, string> * environment_attrs = new map<string, string>();
+
+		if (args[0]->ToObject()->Has(String::New("environmentInfo"))) {
+			v8::Local<Value> eiTmp = args[0]->ToObject()->Get(String::New("environmentInfo"));
+			/*
+			if (eiTmp->ToObject()->Has(String::New("roaming"))) {
+				v8::String::AsciiValue roaming(eiTmp->ToObject()->Get(String::New("roaming")));
+				(*environment_attrs)["roaming"] = *roaming;
+				LOGD("Parameter roaming : %s", *roaming);
+			}
+			if (eiTmp->ToObject()->Has(String::New("bearerType"))) {
+				v8::String::AsciiValue bearerType(eiTmp->ToObject()->Get(String::New("bearerType")));
+				(*environment_attrs)["bearer-type"] = *bearerType;
+				LOGD("Parameter bearer-type : %s", *bearerType);
+			}
+			*/
+			if (eiTmp->ToObject()->Has(String::New("profile"))) {
+				v8::String::AsciiValue profile(eiTmp->ToObject()->Get(String::New("profile")));
+				(*environment_attrs)["profile"] = *profile;
+				LOGD("Parameter profile : %s", *profile);
+			}
+		}
+
+		Request* myReq = new Request(*subject_attrs, *resource_attrs, purpose, obs, *environment_attrs);
 		
 		Effect myEff = pmtmp->pminst->checkRequest(myReq);
 

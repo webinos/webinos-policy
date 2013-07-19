@@ -641,7 +641,6 @@
                                             "ProvisionalActions":{"$ref":"ProvisionalActions"},
                                             "condition":{
                                                 "type":"array",
-                                                "id": "condition",
                                                 "required":false,
                                                 "additionalItems":false,
                                                 "maxItems" : 1,
@@ -665,7 +664,52 @@
                                                                         }
                                                                     }
                                                                 },
-                                                                "condition":{"$ref":"condition"}
+                                                                "condition":{
+                                                                    "type":"array",
+                                                                    "id": "condition",
+                                                                    "required":false,
+                                                                    "additionalItems":false,
+                                                                    "items":{
+                                                                        "type":[
+                                                                            {
+                                                                                "type":"object",
+                                                                                "required":false,
+                                                                                "additionalProperties":false,
+                                                                                "properties":{
+                                                                                    "$":{"$ref":"condition-attrs"},
+                                                                                    "condition":{"$ref":"condition"}
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                "type":"object",
+                                                                                "required":false,
+                                                                                "additionalProperties":false,
+                                                                                "properties":{
+                                                                                    "$":{"$ref":"condition-attrs"},
+                                                                                    "subject-match":{"$ref":"subject-match"}
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                "type":"object",
+                                                                                "required":false,
+                                                                                "additionalProperties":false,
+                                                                                "properties":{
+                                                                                    "$":{"$ref":"condition-attrs"},
+                                                                                    "resource-match":{"$ref":"re-match"}
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                "type":"object",
+                                                                                "required":false,
+                                                                                "additionalProperties":false,
+                                                                                "properties":{
+                                                                                    "$":{"$ref":"condition-attrs"},
+                                                                                    "environment-match":{"$ref":"re-match"}
+                                                                                }
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                }
                                                             }
                                                         },
                                                         {

@@ -52,7 +52,7 @@ private:
 public:
 	Request(const string& widgetRootPath, map<string, vector<string>*>& resources);
 	Request(const string& widgetRootPath, map<string, vector<string>*>& resources, map<string,string>&environment);
-	Request(map<string, vector<string>*>&, map<string, vector<string>*>&, vector<bool>, obligations&);
+	Request(map<string, vector<string>*>&, map<string, vector<string>*>&, vector<bool>, obligations&, map<string,string>&environment);
 	virtual ~Request();
 	
 	TiXmlDocument* getXmlDocument();
