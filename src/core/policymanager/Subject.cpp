@@ -32,9 +32,9 @@ Subject::Subject(TiXmlElement* subject){
 		int nextPos, pos = 0;
 		while(pos < (int)tmp.length())
 		{
-			nextPos = tmp.find(" ",pos);
-			if (nextPos == (int)string::npos)
-				nextPos = tmp.length();			
+			//nextPos = tmp.find(" ",pos);
+			//if (nextPos == (int)string::npos)
+			nextPos = tmp.length();			
 			if(pos != nextPos){
 				string attr = child->Attribute("attr");
 				int dot_pos = attr.find(".");
