@@ -1,0 +1,158 @@
+<policy-set combine="deny-overrides" description="Helen Galaxy Note">
+
+  <policy-set combine="deny-overrides" description="KiF Travel">
+    <policy combine="deny-overrides" description="Helen iMac">
+      <target>
+        <subject>
+          <subject-match attr="user-id" match="helen_jennings@pzh.webinos.org" />
+          <subject-match attr="requestor-id" match="HeleniMac" />
+        </subject>
+      </target>
+      <rule effect="permit">
+        <condition combine="and">
+          <condition combine="or">
+            <resource-match attr="api-feature" match="http://webinos.org/api/w3c/geolocation"/>
+            <resource-match attr="api-feature" match="http://webinos.org/api/w3c/webrtc"/>
+          </condition>
+          <condition combine="or">
+            <environment-match attr="profile" match="KiF Travel" />
+          </condition>
+        </condition>
+      </rule>
+    </policy>
+    <policy combine="deny-overrides" description="Peter iPad">
+      <target>
+        <subject>
+          <subject-match attr="user-id" match="peter_jones@pzh.webinos.org" />
+          <subject-match attr="requestor-id" match="PeteriPad" />
+        </subject>
+      </target>
+      <rule effect="permit">
+        <condition combine="and">
+          <condition combine="or">
+            <resource-match attr="api-feature" match="http://webinos.org/api/w3c/geolocation"/>
+          </condition>
+          <condition combine="or">
+            <environment-match attr="profile" match="KiF Travel" />
+          </condition>
+        </condition>
+      </rule>
+    </policy>
+  </policy-set>
+
+  <policy-set combine="deny-overrides" description="Helen Family">
+    <policy combine="deny-overrides" description="Helen iPhone">
+      <target>
+        <subject>
+          <subject-match attr="user-id" match="helen_jennings@pzh.webinos.org" />
+          <subject-match attr="requestor-id" match="HeleniPhone" />
+        </subject>
+      </target>
+      <rule effect="permit">
+        <condition combine="and">
+          <condition combine="or">
+            <resource-match attr="api-feature" match="http://webinos.org/api/mediacontent"/>
+            <resource-match attr="api-feature" match="http://webinos.org/api/w3c/geolocation"/>
+          </condition>
+          <condition combine="or">
+            <environment-match attr="profile" match="Helen Family" />
+          </condition>
+        </condition>
+      </rule>
+    </policy>
+  </policy-set>
+
+  <policy-set combine="deny-overrides" description="Helen Travel">
+    <policy combine="deny-overrides" description="Helen iPhone">
+      <target>
+        <subject>
+          <subject-match attr="user-id" match="helen_jennings@pzh.webinos.org" />
+          <subject-match attr="requestor-id" match="HeleniPhone" />
+        </subject>
+      </target>
+      <rule effect="permit">
+        <condition combine="and">
+          <condition combine="or">
+            <resource-match attr="api-feature" match="http://webinos.org/api/w3c/geolocation"/>
+            <resource-match attr="api-feature" match="http://webinos.org/api/deviceinteraction"/>
+          </condition>
+          <condition combine="or">
+            <environment-match attr="profile" match="Helen Travel" />
+          </condition>
+        </condition>
+      </rule>
+    </policy>
+    <policy combine="deny-overrides" description="Helen iMac">
+      <target>
+        <subject>
+          <subject-match attr="user-id" match="helen_jennings@pzh.webinos.org" />
+          <subject-match attr="requestor-id" match="HeleniMac" />
+        </subject>
+      </target>
+      <rule effect="permit">
+        <condition combine="and">
+          <condition combine="or">
+            <resource-match attr="api-feature" match="http://webinos.org/api/w3c/geolocation"/>
+            <resource-match attr="api-feature" match="http://webinos.org/api/w3c/webrtc"/>
+            <resource-match attr="api-feature" match="http://webinos.org/api/deviceinteraction"/>
+          </condition>
+          <condition combine="or">
+            <environment-match attr="profile" match="Helen Travel" />
+          </condition>
+        </condition>
+      </rule>
+    </policy>
+    <policy combine="deny-overrides" description="Peter iPad">
+      <target>
+        <subject>
+          <subject-match attr="user-id" match="peter_jones@pzh.webinos.org" />
+          <subject-match attr="requestor-id" match="PeteriPad" />
+        </subject>
+      </target>
+      <rule effect="permit">
+        <condition combine="and">
+          <condition combine="or">
+            <resource-match attr="api-feature" match="http://webinos.org/api/w3c/webrtc"/>
+            <resource-match attr="api-feature" match="http://webinos.org/api/deviceinteraction"/>
+          </condition>
+          <condition combine="or">
+            <environment-match attr="profile" match="Helen Travel" />
+          </condition>
+        </condition>
+      </rule>
+    </policy>
+    <policy combine="deny-overrides" description="Peter TV">
+      <target>
+        <subject>
+          <subject-match attr="user-id" match="peter_jones@pzh.webinos.org" />
+          <subject-match attr="requestor-id" match="PeterTV" />
+        </subject>
+      </target>
+      <rule effect="permit">
+        <condition combine="and">
+          <condition combine="or">
+            <resource-match attr="api-feature" match="http://webinos.org/api/w3c/webrtc"/>
+            <resource-match attr="api-feature" match="http://webinos.org/api/deviceinteraction"/>
+          </condition>
+          <condition combine="or">
+            <environment-match attr="profile" match="Helen Travel" />
+          </condition>
+        </condition>
+      </rule>
+    </policy>
+  </policy-set>
+  <DataHandlingPreferences PolicyId="#DHP_allow_all">
+    <AuthorizationsSet>
+      <AuthzUseForPurpose>
+        <Purpose/>
+      </AuthzUseForPurpose>
+    </AuthorizationsSet>
+  </DataHandlingPreferences>
+  <ProvisionalActions>
+    <ProvisionalAction>
+      <AttributeValue>#DHP_allow_all</AttributeValue>
+      <AttributeValue>*</AttributeValue>
+    </ProvisionalAction>
+  </ProvisionalActions>
+
+</policy-set>
