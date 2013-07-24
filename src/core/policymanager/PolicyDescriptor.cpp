@@ -48,8 +48,8 @@ string PolicyDescriptor::toJSONString() {
 
 	result.append(" \"type\":\"policy\", ");
 	result.append(" \"id\":\"" + id + "\", ");
+	result.append(" \"combine\":\"" + combine + "\",");
 	result.append(" \"effect\":\"" + IPolicyBaseDescriptor::numberToString(effect) + "\",");
-	LOGD("Append Works");
 
 	result.append(" \"position\":\"" + IPolicyBaseDescriptor::numberToString(position) + "\"" );
 	if (!rules.empty()) {

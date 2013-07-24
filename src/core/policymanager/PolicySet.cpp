@@ -402,15 +402,18 @@ Effect PolicySet::evaluate(Request * req, pair<string, bool>* selectedDHPref,
 	if (matchSubject(req)) {
 		if (policies.size() == 0 && policysets.size() == 0) {
 			psd = new PolicySetDescriptor(id);
+			psd->combine = policyCombiningAlgorithm;
 			path = psd;
 			return INAPPLICABLE;
 		} else {
 			Effect result = evaluatePolicies(req, selectedDHPref, psd);
+			psd->combine = policyCombiningAlgorithm;
 			path = psd;
 			return result;
 		}
 	} else {
 		psd = new PolicySetDescriptor(id);
+		psd->combine = policyCombiningAlgorithm;
 		path = psd;
 		return INAPPLICABLE;
 	}

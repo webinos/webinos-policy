@@ -236,6 +236,7 @@ Effect Policy::evaluate(Request* req, pair<string, bool>* selectedDHPref,
 	LOGD("[Policy::evaluate] XXXXXXXXXXXXXXXXXXXXXXXXXXX valuto la policy %s",
 			description.data());
 	PolicyDescriptor* pd = new PolicyDescriptor(id);
+	pd->combine = ruleCombiningAlgorithm;
 	if (matchSubject(req)) {
 		if (req->getResourceAttrs().size() == 0) {
 			path = pd;

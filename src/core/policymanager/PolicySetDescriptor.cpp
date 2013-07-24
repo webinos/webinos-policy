@@ -40,11 +40,10 @@ string PolicySetDescriptor::toJSONString() {
 	result.append(" \"type\":\"policy-set\",");
 
 	result.append(" \"id\":\"" + id + "\",");
+	result.append(" \"combine\":\"" + combine + "\",");
 	result.append(" \"effect\":\"" + IPolicyBaseDescriptor::numberToString(effect) + "\",");
-	LOGD("Append Works");
 	result.append(
 			" \"position\":\"" + IPolicyBaseDescriptor::numberToString(position)+"\"");
-	LOGD("Starting policy sons");
 	if (!policyChilds.empty()) {
 		result.append(",");
 		result.append(" \"policy\": [");
@@ -59,7 +58,6 @@ string PolicySetDescriptor::toJSONString() {
 		}
 		result.append("]");
 	}
-	LOGD("Starting policy-set sons");
 	if (!policySetChilds.empty()) {
 		if (!policyChilds.empty())
 			result.append(", ");

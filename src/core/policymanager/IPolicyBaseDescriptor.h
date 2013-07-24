@@ -15,6 +15,7 @@ public:
 	int position;
     int effect;
 	PolicyType type;
+	string combine;
 	IPolicyBaseDescriptor();
 	IPolicyBaseDescriptor(string id);
 	virtual ~IPolicyBaseDescriptor();
