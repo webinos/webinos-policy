@@ -49,9 +49,9 @@ Condition::Condition(TiXmlElement* condition){
 			{
 			//LOG("[Policy]  : match value: id"<<iii);	
 					
-				nextPos = tmp.find(" ",pos);
-				if (nextPos == (int)string::npos)
-					nextPos = tmp.length();			
+				//nextPos = tmp.find(" ",pos);
+				//if (nextPos == (int)string::npos)
+				nextPos = tmp.length();			
 				if(pos != nextPos){
 					string attr = child->Attribute("attr");
 					int dot_pos = attr.find(".");
