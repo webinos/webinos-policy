@@ -84,13 +84,15 @@ var policyList = [
 	"policy_dhp_12.xml",
 	"policy14.xml",
 	"policy15.xml",
-	"policy16.xml"
+	"policy16.xml",
+    "policy_env_1.xml",
+    "policy_env_2.xml"
 	];
 
 
 function loadManager() {
 	pmlib = require(path.join(__dirname, "../../lib/policymanager.js"));
-	pm = new pmlib.policyManager(rootPolicyFile);
+	pm = new pmlib.policyManager(path.join(__dirname, rootPolicyFile));
 	return pm;
 }
 
@@ -98,12 +100,14 @@ function loadManager() {
 function changepolicy(fileName) {
 	console.log("Change policy to file "+fileName);
 	var data = fs.readFileSync(path.join(__dirname, fileName));
-	fs.writeFileSync(userPolicyFile, data);
+	fs.writeFileSync(path.join(__dirname, userPolicyFile), data);
 }
 
 
-function setRequest(userId, certCn, feature, deviceId, purpose, obligations) {
-	console.log("Setting request for user "+userId+", device "+deviceId+", application released by "+certCn+", feature "+feature+", purpose "+purpose+" and obligations "+obligations);
+function setRequest(userId, certCn, feature, deviceId, purpose, obligations, environment) {
+	console.log("Setting request for user "+userId+", device "+deviceId+
+        ", application released by "+certCn+", feature "+feature+", purpose "
+        +purpose+", obligations "+obligations+" and environment "+environment);
 	var req = {};
 	var ri = {};
 	var si = {};
@@ -117,10 +121,14 @@ function setRequest(userId, certCn, feature, deviceId, purpose, obligations) {
         req.deviceInfo = di;
 	ri.apiFeature = feature;
 	req.resourceInfo = ri;
-	if (purpose !== undefined)
+	if (purpose)
 		req.purpose = purpose;
-	if (obligations !== undefined)
+	if (obligations)
 		req.obligations=obligations;
+	if (environment) {
+        req.environmentInfo = {};
+        req.environmentInfo.profile = environment;
+    }
 	return req;
 }
 
@@ -129,11 +137,11 @@ var TestWrapper = function () {
   this.result = -1;
 };
 
-function checkFeature(policyName, userName, certName, featureName, deviceId, purpose, obligations) {
+function checkFeature(policyName, userName, certName, featureName, deviceId, purpose, obligations, environment) {
 	changepolicy(policyName);
 	pm = loadManager();
 
-	var req = setRequest(userName, certName, featureName, deviceId, purpose, obligations);
+	var req = setRequest(userName, certName, featureName, deviceId, purpose, obligations, environment);
 
   var testWrap = new TestWrapper();
 
@@ -2526,5 +2534,172 @@ describe("Manager.PolicyManager", function() {
 
 	});
 */
+	it("Policy with environment 1", function() {
+		var purpose = [
+			true,	//"http://www.w3.org/2002/01/P3Pv1/current"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/admin"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/develop"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/tailoring"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/pseudo-analysis"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/pseudo-decision"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/individual-analysis"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/individual-decision"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/contact"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/historical"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/telemarketing"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/account"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/arts"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/browsing"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/charity"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/communicate"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/custom"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/delivery"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/downloads"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/education"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/feedback"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/finmgt"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/gambling"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/gaming"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/government"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/health"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/login"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/marketing"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/news"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/payment"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/sales"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/search"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/state"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/surveys"
+			false	//"http://www.primelife.eu/purposes/unspecified"
+			];
+		runs(function() {
+			var res = checkFeature(policyList[28], userList[0], companyList[0], featureList[0], deviceList[0], purpose, null, "Work");
+			expect(res.result).toEqual(0);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[28], userList[0], companyList[0], featureList[0], deviceList[0], purpose, null, "Home");
+			expect(res.result).toEqual(0);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[28], userList[0], companyList[0], featureList[0], deviceList[0], purpose);
+			expect(res.result).toEqual(0);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[28], userList[0], companyList[0], featureList[1], deviceList[0], purpose, null, "Work");
+			expect(res.result).toEqual(0);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[28], userList[0], companyList[0], featureList[1], deviceList[0], purpose);
+			expect(res.result).toEqual(1);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[28], userList[0], companyList[0], featureList[2], deviceList[0], purpose, null, "Work");
+			expect(res.result).toEqual(1);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[28], userList[1], companyList[0], featureList[1], deviceList[0], purpose, null, "Home");
+			expect(res.result).toEqual(0);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[28], userList[1], companyList[0], featureList[1], deviceList[0], purpose, null, "Work");
+			expect(res.result).toEqual(1);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[28], userList[1], companyList[0], featureList[1], deviceList[0], purpose);
+			expect(res.result).toEqual(1);
+		});
+	});
+
+	it("Policy with environment 2", function() {
+		var purpose = [
+			true,	//"http://www.w3.org/2002/01/P3Pv1/current"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/admin"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/develop"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/tailoring"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/pseudo-analysis"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/pseudo-decision"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/individual-analysis"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/individual-decision"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/contact"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/historical"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/telemarketing"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/account"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/arts"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/browsing"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/charity"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/communicate"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/custom"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/delivery"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/downloads"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/education"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/feedback"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/finmgt"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/gambling"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/gaming"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/government"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/health"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/login"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/marketing"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/news"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/payment"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/sales"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/search"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/state"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/surveys"
+			false	//"http://www.primelife.eu/purposes/unspecified"
+			];
+		runs(function() {
+			var res = checkFeature(policyList[29], userList[0], companyList[0], featureList[0], deviceList[0], purpose, null, "Work");
+			expect(res.result).toEqual(0);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[29], userList[0], companyList[0], featureList[0], deviceList[0], purpose, null, "Home");
+			expect(res.result).toEqual(0);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[29], userList[0], companyList[0], featureList[0], deviceList[0], purpose);
+			expect(res.result).toEqual(0);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[29], userList[0], companyList[0], featureList[1], deviceList[0], purpose, null, "Work");
+			expect(res.result).toEqual(0);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[29], userList[0], companyList[0], featureList[1], deviceList[0], purpose);
+			expect(res.result).toEqual(1);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[29], userList[0], companyList[0], featureList[2], deviceList[0], purpose, null, "Work");
+			expect(res.result).toEqual(1);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[29], userList[1], companyList[0], featureList[1], deviceList[0], purpose, null, "Home");
+			expect(res.result).toEqual(0);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[29], userList[1], companyList[0], featureList[1], deviceList[0], purpose, null, "Work");
+			expect(res.result).toEqual(1);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[29], userList[1], companyList[0], featureList[1], deviceList[0], purpose);
+			expect(res.result).toEqual(1);
+		});
+	});
 });
 
