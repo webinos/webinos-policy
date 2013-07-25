@@ -24,6 +24,11 @@ set -e
 cd ./test/jasmine
 jasmine-node .
 
+# Run scenarios related tests
+cd ../jasmine.scenarios
+jasmine-node .
+
+
 # Run Mark Slaymaker's tests
 cd ../jasmine.policy.tests.working
 jasmine-node .
