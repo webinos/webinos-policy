@@ -36,8 +36,10 @@ private:
 	Condition* 	condition;
 	DHPrefs*			datahandlingpreferences;
 	vector<ProvisionalActions*>		provisionalactions;
+
 	
 public:
+	string id;
 	Rule(TiXmlElement*, DHPrefs*);
 	virtual ~Rule();
 	

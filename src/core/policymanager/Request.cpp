@@ -19,7 +19,7 @@
 
 #include "Request.h"
 
-Request::Request(map<string, vector<string>*>& info, map<string, vector<string>*>& resources, vector<bool> purpose, obligations& obl){	
+Request::Request(map<string, vector<string>*>& info, map<string, vector<string>*>& resources, vector<bool> purpose, obligations& obl, map<string,string>&environment){	
 	subject_attrs = info;
 	resource_attrs = resources;
 	purpose_attrs = purpose;
@@ -27,12 +27,7 @@ Request::Request(map<string, vector<string>*>& info, map<string, vector<string>*
 	request_subject_text = "";
 	request_resource_text = "";
 	request_environment_text = "";
-	
-	string roaming = "";
-	string bearer = "unknown";
-
-	environment_attrs["roaming"] = roaming;
-	environment_attrs["bearer-type"] = bearer;
+	environment_attrs = environment;
 }
 	
 Request::Request(const string& widgetRootPath, map<string, vector<string>*>& resources){

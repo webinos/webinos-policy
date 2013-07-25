@@ -1,0 +1,16 @@
+<policy-set combine="deny-overrides" description="user Policy">
+		<policy combine="deny-overrides" description="p1">
+			<target>
+				<subject>
+					<subject-match attr="user-id" match="user1"/>
+				</subject>
+			</target>
+			
+			<rule effect="permit">
+					<condition combine="or">
+						<resource-match attr="api-feature" match="http://mega.org/api/secret1"/>
+						<resource-match attr="api-feature" match="http://mega.org/api/api/secret2"/>
+					</condition>
+			</rule>
+		</policy>
+</policy-set>

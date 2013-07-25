@@ -22,6 +22,7 @@
 
 #include "Request.h"
 #include "PolicySet.h"
+#include "IPolicyBaseDescriptor.h"
 #include "DataHandlingPreferences.h"
 //#include "debug.h"
 
@@ -39,6 +40,7 @@ public:
 	PolicyManager(const string &);
 	virtual ~PolicyManager();
 	Effect checkRequest(Request *);
+	Effect checkRequest(Request*, string&);
 	void init(const string &);
 	string getPolicyName();
 };

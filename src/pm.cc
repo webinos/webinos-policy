@@ -536,15 +536,53 @@ public:
 //		(*environment)["roaming"] = roam;
 		
 //		Request* myReq = new Request(widPath, *resource_attrs, *environment);
-		Request* myReq = new Request(*subject_attrs, *resource_attrs, purpose, obs);
-		
-		Effect myEff = pmtmp->pminst->checkRequest(myReq);
 
-		//enum Effect {PERMIT, DENY, PROMPT_ONESHOT, PROMPT_SESSION, PROMPT_BLANKET, UNDETERMINED, INAPPLICABLE};
+		map<string, string> * environment_attrs = new map<string, string>();
 
-		Local<Integer> result = Integer::New(myEff);
+		if (args[0]->ToObject()->Has(String::New("environmentInfo"))) {
+			v8::Local<Value> eiTmp = args[0]->ToObject()->Get(String::New("environmentInfo"));
+			/*
+			if (eiTmp->ToObject()->Has(String::New("roaming"))) {
+				v8::String::AsciiValue roaming(eiTmp->ToObject()->Get(String::New("roaming")));
+				(*environment_attrs)["roaming"] = *roaming;
+				LOGD("Parameter roaming : %s", *roaming);
+			}
+			if (eiTmp->ToObject()->Has(String::New("bearerType"))) {
+				v8::String::AsciiValue bearerType(eiTmp->ToObject()->Get(String::New("bearerType")));
+				(*environment_attrs)["bearer-type"] = *bearerType;
+				LOGD("Parameter bearer-type : %s", *bearerType);
+			}
+			*/
+			if (eiTmp->ToObject()->Has(String::New("profile"))) {
+				v8::String::AsciiValue profile(eiTmp->ToObject()->Get(String::New("profile")));
+				(*environment_attrs)["profile"] = *profile;
+				LOGD("Parameter profile : %s", *profile);
+			}
+		}
+
+		if( args.Length()>1 && args[1]->IsObject()){
+				Request* myReq = new Request(*subject_attrs, *resource_attrs, purpose, obs, *environment_attrs);
+				string psd;
+				Effect myEff = pmtmp->pminst->checkRequest(myReq, psd);
+				LOGD("[pm.cc]PATH: %s", psd.c_str());
+				args[1]->ToObject()->Set(String::New("path"), String::New(psd.c_str()));
+				//enum Effect {PERMIT, DENY, PROMPT_ONESHOT, PROMPT_SESSION, PROMPT_BLANKET, UNDETERMINED, INAPPLICABLE};
+	
+				Local<Integer> result = Integer::New(myEff);
+			
+				return scope.Close(result);
+		}
+		else{
+			Request* myReq = new Request(*subject_attrs, *resource_attrs, purpose, obs, *environment_attrs);
 		
-		return scope.Close(result);
+			Effect myEff = pmtmp->pminst->checkRequest(myReq);
+
+			//enum Effect {PERMIT, DENY, PROMPT_ONESHOT, PROMPT_SESSION, PROMPT_BLANKET, UNDETERMINED, INAPPLICABLE};
+
+			Local<Integer> result = Integer::New(myEff);
+		
+			return scope.Close(result);
+		}
 	}
 
 	
