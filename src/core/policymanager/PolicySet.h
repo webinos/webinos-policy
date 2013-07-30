@@ -25,6 +25,7 @@
 #include "IPolicyBase.h"
 #include "DataHandlingPreferences.h"
 #include "ProvisionalActions.h"
+#include "PolicySetDescriptor.h"
 
 #include <vector>
 using namespace std;
@@ -44,6 +45,7 @@ private:
 	
 	bool matchSubject(Request*);
 	Effect evaluatePolicies(Request*, pair<string, bool>*);
+	Effect evaluatePolicies(Request*, pair<string, bool>*, IPolicyBaseDescriptor*&);
 //	Effect evaluatePolicySets(Request*);
 	void selectDHPref(Request*, pair<string, bool>*);
 	
@@ -53,6 +55,7 @@ public:
 	virtual ~PolicySet();
 	
 	Effect evaluate(Request*, pair<string, bool>*);
+	Effect evaluate(Request*, pair<string, bool>*, IPolicyBaseDescriptor*&);
 	};
 
 #endif /* POLICYSET_H_ */

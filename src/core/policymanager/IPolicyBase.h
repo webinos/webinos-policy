@@ -27,6 +27,7 @@
 using namespace std;
 
 #include "Globals.h"
+#include "IPolicyBaseDescriptor.h"
 /*
 enum PolicyType {POLICY_SET, POLICY};
 enum Effect {PERMIT, DENY, PROMPT_ONESHOT, PROMPT_SESSION, PROMPT_BLANKET, UNDETERMINED, INAPPLICABLE};
@@ -37,12 +38,14 @@ class IPolicyBase
 	{
 public:
 	string description;
+	string 			id;
 	IPolicyBase(TiXmlElement*);
 	IPolicyBase(IPolicyBase*);
 	virtual ~IPolicyBase();
 	
 	virtual bool matchSubject(Request* req);
 	virtual Effect evaluate(Request* req, pair<string, bool>*);
+	virtual Effect evaluate(Request* req, pair<string, bool>*, IPolicyBaseDescriptor*&);
 	virtual PolicyType get_iType();
 	
 protected:

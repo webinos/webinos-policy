@@ -23,9 +23,12 @@
 #include "IPolicyBase.h"
 #include "Rule.h"
 #include "Subject.h"
+#include "IPolicyBaseDescriptor.h"
 #include "../../debug.h"
 #include "DataHandlingPreferences.h"
 #include "ProvisionalActions.h"
+#include "PolicyDescriptor.h"
+#include "IPolicyBaseDescriptor.h"
 
 class Policy : public IPolicyBase
 	{
@@ -45,6 +48,7 @@ public:
 	
 	bool matchSubject(Request*);
 	Effect evaluate(Request*, pair<string, bool>*);
+	Effect evaluate(Request*, pair<string, bool>*, IPolicyBaseDescriptor*&);
 	PolicyType get_iType();
 //	static string modFunction(const string&, const string&);
 	

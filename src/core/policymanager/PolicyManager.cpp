@@ -86,6 +86,7 @@ Effect PolicyManager::checkRequest(Request * req){
 		LOGD("XACML response: %d", xacml_eff);
 
 		// valid purposes vector
+		LOGD("Ontology size = %d",arraysize(ontology_vector));
 		if (purpose.size() == arraysize(ontology_vector)) {
 			LOGD("PolicyManager: valid purposes vector");
 
@@ -128,6 +129,76 @@ Effect PolicyManager::checkRequest(Request * req){
 		else
 			LOGD("DHP response: false");
 
+		if (xacml_eff == PERMIT && dhp_eff == false){
+			LOGD("XACML-DHPref combined response: %d", PROMPT_BLANKET);
+			return PROMPT_BLANKET;
+		}
+		else {
+			LOGD("XACML-DHPref combined response: %d", xacml_eff);
+			return xacml_eff;
+		}
+	}
+	else
+		return INAPPLICABLE;
+}
+Effect PolicyManager::checkRequest(Request * req, string& path){
+	Effect xacml_eff;
+	bool dhp_eff = false;
+	int features = 0;
+	vector<bool> purpose = req->getPurposeAttrs();
+	LOGD("Policy manager start check");
+	if(validPolicyFile) {
+		selectedDHPref.first.clear();
+		selectedDHPref.second = false;
+		IPolicyBaseDescriptor* psd;
+		xacml_eff = policyDocument->evaluate(req, &selectedDHPref, psd);
+		LOGD("XACML response: %d", xacml_eff);
+
+		// valid purposes vector
+		LOGD("Ontology size = %d",arraysize(ontology_vector));
+		if (purpose.size() == arraysize(ontology_vector)) {
+			LOGD("PolicyManager: valid purposes vector");
+
+			// in ProvisionalAction tags a single resouce requires a single DHPref
+			// no more than one resouce must be used in non installation enforceRequest call
+			if ((req->getResourceAttrs()).count(API_FEATURE) == 1) {
+				features = (req->getResourceAttrs())[API_FEATURE]->size();
+			}
+			if (features == 1){
+				LOGD("One feature requested, DHPref evaluation started");
+				if (selectedDHPref.first.empty() == false) {
+					LOGD("Selected DHPref: %s", selectedDHPref.first.c_str());
+					DHPrefs::iterator it;
+					it=(*dhp).find(selectedDHPref.first);
+					if (it == (*dhp).end()){
+						LOGD("DHPref: %s not found", selectedDHPref.first.c_str());
+					}
+					else {
+						LOGD("DHPref: %s found", selectedDHPref.first.c_str());
+						dhp_eff = (*dhp)[selectedDHPref.first]->evaluate(req);
+					}
+				}
+			}
+			// in installation enforceRequest call more resource parameters can be used
+			// the result of Data handling preferences evaluation is set to true because
+			// the XACML response only is significant
+			else {
+				LOGD("%d features requested, DHPref evaluation skipped", features);
+				dhp_eff = true;
+			}
+		}
+		// invalid purposes vector
+		else {
+			LOGD("PolicyManager: invalid purposes vector");
+		}
+
+		if (dhp_eff == true){
+			LOGD("DHP response: true");
+		}
+		else
+			LOGD("DHP response: false");
+		path = psd->toJSONString();
+		delete psd;
 		if (xacml_eff == PERMIT && dhp_eff == false){
 			LOGD("XACML-DHPref combined response: %d", PROMPT_BLANKET);
 			return PROMPT_BLANKET;

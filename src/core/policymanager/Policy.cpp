@@ -19,64 +19,71 @@
 
 #include "Policy.h"
 
-Policy::Policy(TiXmlElement* policy, DHPrefs* dhp)
-	: IPolicyBase(policy), datahandlingpreferences(dhp)
-{
+Policy::Policy(TiXmlElement* policy, DHPrefs* dhp) :
+		IPolicyBase(policy), datahandlingpreferences(dhp) {
 	iType = POLICY;
-	ruleCombiningAlgorithm = (policy->Attribute("combine")!=NULL) ? policy->Attribute("combine") : deny_overrides_algorithm;
+	ruleCombiningAlgorithm =
+			(policy->Attribute("combine") != NULL) ?
+					policy->Attribute("combine") : deny_overrides_algorithm;
+	id = (policy->Attribute("id") != NULL) ? policy->Attribute("id") : "-1";
 	//init subjects
 	TiXmlNode * target = policy->FirstChild("target");
-	if(target){
-		for(TiXmlElement * child = (TiXmlElement*)target->FirstChild("subject"); child;
-				child = (TiXmlElement*)child->NextSibling() ) {
+	if (target) {
+		for (TiXmlElement * child = (TiXmlElement*) target->FirstChild(
+				"subject"); child; child =
+				(TiXmlElement*) child->NextSibling()) {
 			subjects.push_back(new Subject(child));
 		}
 	}
-		
+
 	//init datahandlingpreferences
-	for(TiXmlElement * child = static_cast<TiXmlElement*>(policy->FirstChild(dhPrefTag)); child;
-			child = static_cast<TiXmlElement*>(child->NextSibling(dhPrefTag)) ) {
+	for (TiXmlElement * child = static_cast<TiXmlElement*>(policy->FirstChild(
+			dhPrefTag)); child;
+			child = static_cast<TiXmlElement*>(child->NextSibling(dhPrefTag))) {
 		LOGD("Policy: DHPref %s found", child->Attribute(policyIdTag.c_str()));
-		(*dhp)[child->Attribute(policyIdTag.c_str())]=new DataHandlingPreferences(child);
+		(*dhp)[child->Attribute(policyIdTag.c_str())] =
+				new DataHandlingPreferences(child);
 	}
 	LOGD("Policy DHPref number: %d", (*dhp).size());
 
 	//init ProvisionalActions
-	for(TiXmlElement * child = static_cast<TiXmlElement*>(policy->FirstChild(provisionalActionsTag)); child;
-			child = static_cast<TiXmlElement*>(child->NextSibling(provisionalActionsTag)) ) {
+	for (TiXmlElement * child = static_cast<TiXmlElement*>(policy->FirstChild(
+			provisionalActionsTag)); child;
+			child = static_cast<TiXmlElement*>(child->NextSibling(
+					provisionalActionsTag))) {
 		LOGD("Policy: ProvisionalActions found");
 		provisionalactions.push_back(new ProvisionalActions(child));
 	}
-	
+
 	// init rules
-	for(TiXmlElement * child = (TiXmlElement*)policy->FirstChild("rule"); child;
-			child = (TiXmlElement*)child->NextSibling("rule")) {
+	for (TiXmlElement * child = (TiXmlElement*) policy->FirstChild("rule");
+			child; child = (TiXmlElement*) child->NextSibling("rule")) {
 		rules.push_back(new Rule(child, dhp));
 	}
-	
-	LOGD("[Policy]  : subjects size : %d",subjects.size());
-	LOGD("[Policy]  : rules size : %d",rules.size());
+
+	LOGD("[Policy]  : subjects size : %d", subjects.size());
+	LOGD("[Policy]  : rules size : %d", rules.size());
 }
 
 Policy::~Policy() {
-	for (vector<ProvisionalActions*>::iterator it = provisionalactions.begin(); it != provisionalactions.end(); it++)
+	for (vector<ProvisionalActions*>::iterator it = provisionalactions.begin();
+			it != provisionalactions.end(); it++)
 		delete *it;
 }
 
 //virtual
-PolicyType Policy::get_iType(){
+PolicyType Policy::get_iType() {
 	return POLICY;
 }
 
 //virtual
-bool Policy::matchSubject(Request* req){
-	LOGD("[Policy] try match subject for %s",description.data());
-	if(subjects.size() == 0){
+bool Policy::matchSubject(Request* req) {
+	LOGD("[Policy] try match subject for %s", description.data());
+	if (subjects.size() == 0) {
 		return true;		// Policy is valid for all widget
-	}
-	else
-		for(unsigned int i=0; i<subjects.size(); i++){
-			if(subjects[i]->match(req)){
+	} else
+		for (unsigned int i = 0; i < subjects.size(); i++) {
+			if (subjects[i]->match(req)) {
 				return true;
 			}
 		}
@@ -84,129 +91,133 @@ bool Policy::matchSubject(Request* req){
 }
 
 //virtual
-Effect Policy::evaluate(Request* req, pair<string, bool>* selectedDHPref){
-/*	
-	if(req->getResourceAttrs().find("api-feature") != req->getResourceAttrs().end())
-		LOGD("[Policy::evaluate] api-feature size : %d",req->getResourceAttrs()["api-feature"]->size());
-	if(req->getResourceAttrs().find("device-cap") != req->getResourceAttrs().end())
-		LOGD("[Policy::evaluate] device-cap size : %d",req->getResourceAttrs()["device-cap"]->size());
-*/	
-	LOGD("[Policy::evaluate] XXXXXXXXXXXXXXXXXXXXXXXXXXX valuto la policy %s",description.data());
-	if(matchSubject(req)){
+Effect Policy::evaluate(Request* req, pair<string, bool>* selectedDHPref) {
+	/*
+	 if(req->getResourceAttrs().find("api-feature") != req->getResourceAttrs().end())
+	 LOGD("[Policy::evaluate] api-feature size : %d",req->getResourceAttrs()["api-feature"]->size());
+	 if(req->getResourceAttrs().find("device-cap") != req->getResourceAttrs().end())
+	 LOGD("[Policy::evaluate] device-cap size : %d",req->getResourceAttrs()["device-cap"]->size());
+	 */
+	LOGD("[Policy::evaluate] XXXXXXXXXXXXXXXXXXXXXXXXXXX valuto la policy %s",
+			description.data());
+	if (matchSubject(req)) {
 		if (req->getResourceAttrs().size() == 0)
 			return PERMIT;
-		
-		LOGD("RULE COMBINING ALG : %s",ruleCombiningAlgorithm.data());
-		
-		if(ruleCombiningAlgorithm == deny_overrides_algorithm){
+
+		LOGD("RULE COMBINING ALG : %s", ruleCombiningAlgorithm.data());
+
+		if (ruleCombiningAlgorithm == deny_overrides_algorithm) {
 			LOGD("[Policy::evaluate] deny_overrides algorithm");
-			int effects_result[] = {0,0,0,0,0,0,0};
-			for(unsigned int i=0; i<rules.size(); i++){
+			int effects_result[] = { 0, 0, 0, 0, 0, 0, 0 };
+			for (unsigned int i = 0; i < rules.size(); i++) {
 				int tmp = rules[i]->evaluate(req, selectedDHPref);
 
 				selectDHPref(req, selectedDHPref);
 
-				LOGD("eval : %d",tmp);
+				LOGD("eval : %d", tmp);
 				effects_result[tmp]++;
-				if(effects_result[DENY] > 0)
+				if (effects_result[DENY] > 0)
 					return DENY;
 			}
-			LOGD("[Policy::evaluate] (0) PERMIT %d",effects_result[0]);
-			LOGD("[Policy::evaluate] (1) DENY %d",effects_result[1]);
-			LOGD("[Policy::evaluate] (2) ONESHOT %d",effects_result[2]);
-			LOGD("[Policy::evaluate] (3) SESSION %d",effects_result[3]);
-			LOGD("[Policy::evaluate] (4) BLANKET %d",effects_result[4]);
-			LOGD("[Policy::evaluate] (5) UNDETERMINED %d",effects_result[5]);
-			
-			if(effects_result[UNDETERMINED])
+			LOGD("[Policy::evaluate] (0) PERMIT %d", effects_result[0]);
+			LOGD("[Policy::evaluate] (1) DENY %d", effects_result[1]);
+			LOGD("[Policy::evaluate] (2) ONESHOT %d", effects_result[2]);
+			LOGD("[Policy::evaluate] (3) SESSION %d", effects_result[3]);
+			LOGD("[Policy::evaluate] (4) BLANKET %d", effects_result[4]);
+			LOGD("[Policy::evaluate] (5) UNDETERMINED %d", effects_result[5]);
+
+			if (effects_result[UNDETERMINED])
 				return UNDETERMINED;
-			if(effects_result[PROMPT_ONESHOT])
+			if (effects_result[PROMPT_ONESHOT])
 				return PROMPT_ONESHOT;
-			if(effects_result[PROMPT_SESSION])
+			if (effects_result[PROMPT_SESSION])
 				return PROMPT_SESSION;
-			if(effects_result[PROMPT_BLANKET])
+			if (effects_result[PROMPT_BLANKET])
 				return PROMPT_BLANKET;
-			if(effects_result[PERMIT])
+			if (effects_result[PERMIT])
 				return PERMIT;
-			return INAPPLICABLE;		
-		}
-		else if(ruleCombiningAlgorithm == permit_overrides_algorithm){
+			return INAPPLICABLE;
+		} else if (ruleCombiningAlgorithm == permit_overrides_algorithm) {
 			LOGD("[Policy::evaluate] permit_overrides algorithm");
-			int effects_result[] = {0,0,0,0,0,0,0};
-			for(unsigned int i=0; i<rules.size(); i++){
+			int effects_result[] = { 0, 0, 0, 0, 0, 0, 0 };
+			for (unsigned int i = 0; i < rules.size(); i++) {
 				effects_result[rules[i]->evaluate(req, selectedDHPref)]++;
 
 				selectDHPref(req, selectedDHPref);
 
-				if(effects_result[PERMIT] > 0)
+				if (effects_result[PERMIT] > 0)
 					return PERMIT;
 			}
-			
-			LOGD("[Policy::evaluate] (0) PERMIT %d",effects_result[0]);
-			LOGD("[Policy::evaluate] (1) DENY %d",effects_result[1]);
-			LOGD("[Policy::evaluate] (2) ONESHOT %d",effects_result[2]);
-			LOGD("[Policy::evaluate] (3) SESSION %d",effects_result[3]);
-			LOGD("[Policy::evaluate] (4) BLANKET %d",effects_result[4]);
-			LOGD("[Policy::evaluate] (5) UNDETERMINED %d",effects_result[5]);
-			
-			if(effects_result[UNDETERMINED])
+
+			LOGD("[Policy::evaluate] (0) PERMIT %d", effects_result[0]);
+			LOGD("[Policy::evaluate] (1) DENY %d", effects_result[1]);
+			LOGD("[Policy::evaluate] (2) ONESHOT %d", effects_result[2]);
+			LOGD("[Policy::evaluate] (3) SESSION %d", effects_result[3]);
+			LOGD("[Policy::evaluate] (4) BLANKET %d", effects_result[4]);
+			LOGD("[Policy::evaluate] (5) UNDETERMINED %d", effects_result[5]);
+
+			if (effects_result[UNDETERMINED])
 				return UNDETERMINED;
-			if(effects_result[PROMPT_BLANKET])
+			if (effects_result[PROMPT_BLANKET])
 				return PROMPT_BLANKET;
-			if(effects_result[PROMPT_SESSION])
+			if (effects_result[PROMPT_SESSION])
 				return PROMPT_SESSION;
-			if(effects_result[PROMPT_ONESHOT])
+			if (effects_result[PROMPT_ONESHOT])
 				return PROMPT_ONESHOT;
-			if(effects_result[DENY])
+			if (effects_result[DENY])
 				return DENY;
 			return INAPPLICABLE;
-		}
-		else if(ruleCombiningAlgorithm == first_applicable_algorithm){
+		} else if (ruleCombiningAlgorithm == first_applicable_algorithm) {
 			LOGD("[Policy] first_applicable algorithm");
 			Effect tmp_effect;
-			for(unsigned int i=0; i<rules.size(); i++){
+			for (unsigned int i = 0; i < rules.size(); i++) {
 				tmp_effect = rules[i]->evaluate(req, selectedDHPref);
 
 				selectDHPref(req, selectedDHPref);
 
-				if(tmp_effect != UNDETERMINED && tmp_effect != INAPPLICABLE)
+				if (tmp_effect != UNDETERMINED && tmp_effect != INAPPLICABLE)
 					return tmp_effect;
-				else if(tmp_effect == UNDETERMINED)
+				else if (tmp_effect == UNDETERMINED)
 					return UNDETERMINED;
-				else if(tmp_effect ==  INAPPLICABLE)
+				else if (tmp_effect == INAPPLICABLE)
 					continue;
 			}
 			return INAPPLICABLE;
 		} else {
-		  // TODO: is that right? what should happen with unknown values?
-		  return UNDETERMINED;
+			// TODO: is that right? what should happen with unknown values?
+			return UNDETERMINED;
 		}
-	}
-	else
+	} else
 		return INAPPLICABLE;
 }
 
-void Policy::selectDHPref(Request* req, pair<string, bool>* selectedDHPref){
+void Policy::selectDHPref(Request* req, pair<string, bool>* selectedDHPref) {
 	pair<string, bool> preferenceid;
 
-	if((*selectedDHPref).second == false) {
+	if ((*selectedDHPref).second == false) {
 		// search for a provisional action with a resource matching the request
-		LOGD("Policy: looking for DHPref in %d ProvisionalActions",provisionalactions.size());
-		for(unsigned int i=0; i<provisionalactions.size(); i++){
+		LOGD("Policy: looking for DHPref in %d ProvisionalActions",
+				provisionalactions.size());
+		for (unsigned int i = 0; i < provisionalactions.size(); i++) {
 			LOGD("Policy: ProvisionalActions %d evaluation", i);
 			preferenceid = provisionalactions[i]->evaluate(req);
-			LOGD("Policy: ProvisionalActions %d evaluation response: %s", i, preferenceid.first.c_str());
-			
+			LOGD("Policy: ProvisionalActions %d evaluation response: %s", i,
+					preferenceid.first.c_str());
+
 			// search for a dh preference with an id matching the string returned by
 			// the previous provisional action
 			if (preferenceid.first.empty() == false) {
 				// exact match (preferenceid.second == true): select this DHPref
 				// partial match (preferenceid.second == false): select this DHPref only if another partial match is not selected
-				if (preferenceid.second == true || (preferenceid.second == false && (*selectedDHPref).first.empty() == true) ) {
+				if (preferenceid.second == true
+						|| (preferenceid.second == false
+								&& (*selectedDHPref).first.empty() == true)) {
 					// test if DHPref exists
-					if ((*datahandlingpreferences).count(preferenceid.first) == 1) {
+					if ((*datahandlingpreferences).count(preferenceid.first)
+							== 1) {
 						(*selectedDHPref) = preferenceid;
-						LOGD("Policy: DHPref found: %s", (*selectedDHPref).first.c_str());
+						LOGD("Policy: DHPref found: %s",
+								(*selectedDHPref).first.c_str());
 						break;
 					}
 				}
@@ -214,43 +225,196 @@ void Policy::selectDHPref(Request* req, pair<string, bool>* selectedDHPref){
 		}
 	}
 }
-
-/*
-string Policy::modFunction(const string& func, const string& val){
-	// func = {scheme, host, authority, scheme-authority, path}
-	int pos = val.find(":");
-	int pos1 = val.find_last_of("/",pos+2);
-	int pos2 = val.find("/",pos1+1);
-	
-	if(func == "scheme"){
-		if(pos != string::npos)
-			return val.substr(0,pos);
-	}
-	else if(func == "authority" || func == "host"){	
-		string authority = val.substr(pos1+1, pos2-pos1-1);
-		if(func == "authority")
-			return authority;
-		else{
-			int pos_at = authority.find("@")+1;
-			int pos3 = authority.find(":");
-			if(pos_at == string::npos)
-				pos_at = 0;
-			if(pos3 == string::npos)
-				pos3 = authority.length();
-			return authority.substr(pos_at, pos3-pos_at);
+Effect Policy::evaluate(Request* req, pair<string, bool>* selectedDHPref,
+		IPolicyBaseDescriptor*& path) {
+	/*
+	 if(req->getResourceAttrs().find("api-feature") != req->getResourceAttrs().end())
+	 LOGD("[Policy::evaluate] api-feature size : %d",req->getResourceAttrs()["api-feature"]->size());
+	 if(req->getResourceAttrs().find("device-cap") != req->getResourceAttrs().end())
+	 LOGD("[Policy::evaluate] device-cap size : %d",req->getResourceAttrs()["device-cap"]->size());
+	 */
+	LOGD("[Policy::evaluate] XXXXXXXXXXXXXXXXXXXXXXXXXXX valuto la policy %s",
+			description.data());
+	PolicyDescriptor* pd = new PolicyDescriptor(id);
+	pd->combine = ruleCombiningAlgorithm;
+	if (matchSubject(req)) {
+		if (req->getResourceAttrs().size() == 0) {
+			path = pd;
+			return PERMIT;
 		}
+		LOGD("RULE COMBINING ALG : %s", ruleCombiningAlgorithm.data());
+
+		if (ruleCombiningAlgorithm == deny_overrides_algorithm) {
+			LOGD("[Policy::evaluate] deny_overrides algorithm");
+			int effects_result[] = { 0, 0, 0, 0, 0, 0, 0 };
+			for (unsigned int i = 0; i < rules.size(); i++) {
+				int tmp = rules[i]->evaluate(req, selectedDHPref);
+				pd->addRule(tmp, rules[i]->id, i);
+				selectDHPref(req, selectedDHPref);
+
+				LOGD("eval : %d", tmp);
+				effects_result[tmp]++;
+
+			}
+			LOGD("[Policy::evaluate] (0) PERMIT %d", effects_result[0]);
+			LOGD("[Policy::evaluate] (1) DENY %d", effects_result[1]);
+			LOGD("[Policy::evaluate] (2) ONESHOT %d", effects_result[2]);
+			LOGD("[Policy::evaluate] (3) SESSION %d", effects_result[3]);
+			LOGD("[Policy::evaluate] (4) BLANKET %d", effects_result[4]);
+			LOGD("[Policy::evaluate] (5) UNDETERMINED %d", effects_result[5]);
+			if (effects_result[DENY]){
+				pd->effect = DENY;
+				path = pd;
+				return DENY;
+			}
+			if (effects_result[UNDETERMINED]){
+				pd->effect = UNDETERMINED;
+				path = pd;
+				return UNDETERMINED;
+			}
+			if (effects_result[PROMPT_ONESHOT]){
+				pd->effect = PROMPT_ONESHOT;
+				path = pd;
+				return PROMPT_ONESHOT;
+			}
+			if (effects_result[PROMPT_SESSION]){
+				pd->effect = PROMPT_SESSION;
+				path = pd;
+				return PROMPT_SESSION;
+			}
+			if (effects_result[PROMPT_BLANKET]){
+				pd->effect = PROMPT_BLANKET;
+				path = pd;
+				return PROMPT_BLANKET;
+			}
+			if (effects_result[PERMIT]){
+				pd->effect = PERMIT;
+				path = pd;
+				return PERMIT;
+			}
+			pd->effect = INAPPLICABLE;
+			path = pd;
+			return INAPPLICABLE;
+		} else if (ruleCombiningAlgorithm == permit_overrides_algorithm) {
+			LOGD("[Policy::evaluate] permit_overrides algorithm");
+			int effects_result[] = { 0, 0, 0, 0, 0, 0, 0 };
+			for (unsigned int i = 0; i < rules.size(); i++) {
+				int tmp = rules[i]->evaluate(req, selectedDHPref);
+				effects_result[tmp]++;
+				pd->addRule(tmp, rules[i]->id, i);
+				selectDHPref(req, selectedDHPref);
+			}
+
+			LOGD("[Policy::evaluate] (0) PERMIT %d", effects_result[0]);
+			LOGD("[Policy::evaluate] (1) DENY %d", effects_result[1]);
+			LOGD("[Policy::evaluate] (2) ONESHOT %d", effects_result[2]);
+			LOGD("[Policy::evaluate] (3) SESSION %d", effects_result[3]);
+			LOGD("[Policy::evaluate] (4) BLANKET %d", effects_result[4]);
+			LOGD("[Policy::evaluate] (5) UNDETERMINED %d", effects_result[5]);
+			if (effects_result[PERMIT]){
+				pd->effect = PERMIT;
+				path = pd;
+				return PERMIT;
+			}
+			if (effects_result[UNDETERMINED]){
+				pd->effect = UNDETERMINED;
+				path = pd;
+				return UNDETERMINED;
+			}
+			if (effects_result[PROMPT_BLANKET]){
+				pd->effect = PROMPT_BLANKET;
+				path = pd;
+				return PROMPT_BLANKET;
+			}
+			if (effects_result[PROMPT_SESSION]){
+				pd->effect = PROMPT_SESSION;
+				path = pd;
+				return PROMPT_SESSION;
+			}
+			if (effects_result[PROMPT_ONESHOT]){
+				pd->effect = PROMPT_ONESHOT;
+				path = pd;
+				return PROMPT_ONESHOT;
+			}
+			if (effects_result[DENY]){
+				pd->effect = DENY;
+				path = pd;
+				return DENY;
+			}
+			pd->effect = INAPPLICABLE;
+			path = pd;
+			return INAPPLICABLE;
+		} else if (ruleCombiningAlgorithm == first_applicable_algorithm) {
+			LOGD("[Policy] first_applicable algorithm");
+			Effect tmp_effect;
+			Effect result = INAPPLICABLE;
+			for (unsigned int i = 0; i < rules.size(); i++) {
+				tmp_effect = rules[i]->evaluate(req, selectedDHPref);
+				LOGD("[Policy] Adding Rule to Descriptor");
+				pd->addRule(tmp_effect, rules[i]->id, i);
+				selectDHPref(req, selectedDHPref);
+				if (result == INAPPLICABLE) {
+					if (tmp_effect != UNDETERMINED
+							&& tmp_effect != INAPPLICABLE)
+						result = tmp_effect;
+					else if (tmp_effect == UNDETERMINED)
+						result = UNDETERMINED;
+					else if (tmp_effect == INAPPLICABLE)
+						continue;
+				}
+			}
+			pd->effect = result;
+			path = pd;
+			return result;
+		} else {
+			// TODO: is that right? what should happen with unknown values?
+			pd->effect = UNDETERMINED;
+			path = pd;
+			return UNDETERMINED;
+		}
+	} else {
+		pd->effect = INAPPLICABLE;
+		path = pd;
+		return INAPPLICABLE;
 	}
-	else if(func == "scheme-authority"){
-		if(pos2-pos1 == 1)
-			return "";
-		return val.substr(0, pos2);
-	}
-	else if(func == "path"){
-		int pos4 = val.find("?");
-		if(pos4 == string::npos)
-			pos4 = val.length();
-		return val.substr(pos2, pos4-pos2);
-	}
-	return "";
+
 }
-*/
+/*
+ string Policy::modFunction(const string& func, const string& val){
+ // func = {scheme, host, authority, scheme-authority, path}
+ int pos = val.find(":");
+ int pos1 = val.find_last_of("/",pos+2);
+ int pos2 = val.find("/",pos1+1);
+
+ if(func == "scheme"){
+ if(pos != string::npos)
+ return val.substr(0,pos);
+ }
+ else if(func == "authority" || func == "host"){
+ string authority = val.substr(pos1+1, pos2-pos1-1);
+ if(func == "authority")
+ return authority;
+ else{
+ int pos_at = authority.find("@")+1;
+ int pos3 = authority.find(":");
+ if(pos_at == string::npos)
+ pos_at = 0;
+ if(pos3 == string::npos)
+ pos3 = authority.length();
+ return authority.substr(pos_at, pos3-pos_at);
+ }
+ }
+ else if(func == "scheme-authority"){
+ if(pos2-pos1 == 1)
+ return "";
+ return val.substr(0, pos2);
+ }
+ else if(func == "path"){
+ int pos4 = val.find("?");
+ if(pos4 == string::npos)
+ pos4 = val.length();
+ return val.substr(pos2, pos4-pos2);
+ }
+ return "";
+ }
+ */
