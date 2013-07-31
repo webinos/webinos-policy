@@ -5,7 +5,7 @@
         "properties":{
             "policy-set": {
                 "type":"object",
-                "id": "policy-set",
+                "id": "policy-setWithP",
                 "required":false,
                 "additionalProperties":false,
                 "properties":{
@@ -829,6 +829,7 @@
         "properties":{
             "policy-set": {
                 "type":"object",
+                "id":"policy-setWithPS",
                 "required":false,
                 "additionalProperties":false,
                 "properties":{
@@ -840,7 +841,7 @@
                         "type":"array",
                         "required":false,
                         "additionalItems":false,
-                        "items":{"$ref":"policy-set"}
+                        "items": { "type": [ {"$ref":"policy-setWithP"}, { "$ref":"policy-setWithPS"} ] }
                     }
                 }
             }
