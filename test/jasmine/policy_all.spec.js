@@ -35,6 +35,11 @@ var featureList = [
 	"http://cdi-api.org/test"   // example of third party API
 	];
 
+var serviceList = [
+	"service1",
+	"service2",
+	"service3"
+	];
 
 var userList = [
 	"user1",
@@ -85,8 +90,9 @@ var policyList = [
 	"policy14.xml",
 	"policy15.xml",
 	"policy16.xml",
-    "policy_env_1.xml",
-    "policy_env_2.xml"
+	"policy_env_1.xml",
+	"policy_env_2.xml",
+	"policy_service_1.xml"
 	];
 
 
@@ -106,8 +112,8 @@ function changepolicy(fileName) {
 
 function setRequest(userId, certCn, feature, deviceId, purpose, obligations, environment) {
 	console.log("Setting request for user "+userId+", device "+deviceId+
-        ", application released by "+certCn+", feature "+feature+", purpose "
-        +purpose+", obligations "+obligations+" and environment "+environment);
+		", application released by "+certCn+", feature "+feature+", purpose "
+		+purpose+", obligations "+obligations+" and environment "+environment);
 	var req = {};
 	var ri = {};
 	var si = {};
@@ -116,9 +122,9 @@ function setRequest(userId, certCn, feature, deviceId, purpose, obligations, env
 	si.userId = userId;
 	req.subjectInfo = si;
 	wi.distributorKeyCn = certCn;
-        req.widgetInfo = wi;
+		req.widgetInfo = wi;
 	di.requestorId = deviceId;
-        req.deviceInfo = di;
+		req.deviceInfo = di;
 	ri.apiFeature = feature;
 	req.resourceInfo = ri;
 	if (purpose)
@@ -126,9 +132,37 @@ function setRequest(userId, certCn, feature, deviceId, purpose, obligations, env
 	if (obligations)
 		req.obligations=obligations;
 	if (environment) {
-        req.environmentInfo = {};
-        req.environmentInfo.profile = environment;
-    }
+		req.environmentInfo = {};
+		req.environmentInfo.profile = environment;
+	}
+	return req;
+}
+
+function setServiceRequest(userId, certCn, service, deviceId, purpose, obligations, environment) {
+	console.log("Setting request for user "+userId+", device "+deviceId+
+		", application released by "+certCn+", service "+service+", purpose "
+		+purpose+", obligations "+obligations+" and environment "+environment);
+	var req = {};
+	var ri = {};
+	var si = {};
+	var wi = {};
+	var di = {};
+	si.userId = userId;
+	req.subjectInfo = si;
+	wi.distributorKeyCn = certCn;
+		req.widgetInfo = wi;
+	di.requestorId = deviceId;
+		req.deviceInfo = di;
+	ri.serviceId = service;
+	req.resourceInfo = ri;
+	if (purpose)
+		req.purpose = purpose;
+	if (obligations)
+		req.obligations=obligations;
+	if (environment) {
+		req.environmentInfo = {};
+		req.environmentInfo.profile = environment;
+	}
 	return req;
 }
 
@@ -143,13 +177,31 @@ function checkFeature(policyName, userName, certName, featureName, deviceId, pur
 
 	var req = setRequest(userName, certName, featureName, deviceId, purpose, obligations, environment);
 
-  var testWrap = new TestWrapper();
+	var testWrap = new TestWrapper();
 
 	// noprompt (third parameter) set to true
 	pm.enforceRequest(req, 0, true, function(res) {
-    console.log("result is: " + res);
-    testWrap.result = res;
-    testWrap.complete = true;
+	console.log("result is: " + res);
+	testWrap.result = res;
+	testWrap.complete = true;
+  });
+
+  return testWrap;
+}
+
+function checkService(policyName, userName, certName, serviceName, deviceId, purpose, obligations, environment) {
+	changepolicy(policyName);
+	pm = loadManager();
+
+	var req = setServiceRequest(userName, certName, serviceName, deviceId, purpose, obligations, environment);
+
+	var testWrap = new TestWrapper();
+
+	// noprompt (third parameter) set to true
+	pm.enforceRequest(req, 0, true, function(res) {
+	console.log("result is: " + res);
+	testWrap.result = res;
+	testWrap.complete = true;
   });
 
   return testWrap;
@@ -2699,6 +2751,65 @@ describe("Manager.PolicyManager", function() {
 		runs(function() {
 			var res = checkFeature(policyList[29], userList[1], companyList[0], featureList[1], deviceList[0], purpose);
 			expect(res.result).toEqual(1);
+		});
+	});
+
+	it("Policy with service-id", function() {
+		var purpose = [
+			true,	//"http://www.w3.org/2002/01/P3Pv1/current"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/admin"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/develop"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/tailoring"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/pseudo-analysis"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/pseudo-decision"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/individual-analysis"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/individual-decision"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/contact"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/historical"
+			false,	//"http://www.w3.org/2002/01/P3Pv1/telemarketing"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/account"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/arts"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/browsing"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/charity"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/communicate"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/custom"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/delivery"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/downloads"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/education"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/feedback"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/finmgt"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/gambling"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/gaming"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/government"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/health"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/login"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/marketing"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/news"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/payment"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/sales"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/search"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/state"
+			false,	//"http://www.w3.org/2002/01/P3Pv11/surveys"
+			false	//"http://www.primelife.eu/purposes/unspecified"
+			];
+		runs(function() {
+			var res = checkService(policyList[30], userList[0], companyList[0], serviceList[0], deviceList[0], purpose);
+			expect(res.result).toEqual(1);
+		});
+
+		runs(function() {
+			var res = checkService(policyList[30], userList[0], companyList[0], serviceList[1], deviceList[0], purpose);
+			expect(res.result).toEqual(0);
+		});
+
+		runs(function() {
+			var res = checkService(policyList[30], userList[1], companyList[0], serviceList[1], deviceList[0], purpose);
+			expect(res.result).toEqual(1);
+		});
+
+		runs(function() {
+			var res = checkService(policyList[30], userList[1], companyList[0], serviceList[2], deviceList[0], purpose);
+			expect(res.result).toEqual(0);
 		});
 	});
 });
