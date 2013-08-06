@@ -1,0 +1,43 @@
+<policy-set id="policySetId1" combine="first-matching-target" description="policy_service_1">
+    <policy id="owner" combine="first-applicable">
+        <target>
+            <subject>
+                <subject-match attr="user-id" match="user1"/>
+            </subject>
+        </target>
+        <rule id="r1" effect="deny">
+            <condition combine="or">
+                <resource-match attr="service-id" match="service1"/>
+            </condition>
+        </rule>
+        <rule id="r2" effect="permit">
+            <condition combine="or">
+                <resource-match attr="service-id" match="service2"/>
+                <resource-match attr="service-id" match="service3"/>
+                <resource-match attr="service-id" match="service4"/>
+            </condition>
+        </rule>
+        <rule id="r3" effect="permit"></rule>
+    </policy>
+    <policy id="default" combine="first-applicable" description="default-policy">
+        <rule id="r8" effect="permit">
+            <condition combine="and">
+                <resource-match attr="service-id" match="service3"/>
+            </condition>
+        </rule>
+        <rule id="r9" effect="deny"></rule>
+    </policy>
+    <DataHandlingPreferences PolicyId="#DHP_allow_all">
+        <AuthorizationsSet>
+            <AuthzUseForPurpose>
+                <Purpose/>
+            </AuthzUseForPurpose>
+        </AuthorizationsSet>
+    </DataHandlingPreferences>
+    <ProvisionalActions>
+        <ProvisionalAction>
+            <AttributeValue>#DHP_allow_all</AttributeValue>
+            <AttributeValue>*</AttributeValue>
+        </ProvisionalAction>
+    </ProvisionalActions>
+</policy-set>
