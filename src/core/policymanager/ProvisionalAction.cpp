@@ -51,30 +51,33 @@ pair<string, bool> ProvisionalAction::evaluate(Request * req){
 
 	if (resource_attrs.count(API_FEATURE) == 1) {
 		features = (req->getResourceAttrs())[API_FEATURE]->size();
-		req_feature = (req->getResourceAttrs())[API_FEATURE]->at(0);
+		if (features == 1) {
+			req_feature = (req->getResourceAttrs())[API_FEATURE]->at(0);
+
+			// Provisional actions link together a single DHPref and a single feature,
+			// more than a feature in a request should not be allowed
+			// this is already tested in PolicyManager.cpp, but it is tested again here to be careful
+			if (value1.empty() == false && value2.empty() == false) {
+				LOGD("ProvisionalAction: values %s and %s to compare with %s", value1.c_str(), value2.c_str(), req_feature.c_str());
+				if (value1.compare(req_feature) == 0) {
+					LOGD("ProvisionalAction: %s and %s exact match", value1.c_str(), req_feature.c_str());
+					return pair<string, bool>(value2, true);
+				}
+				if (value2.compare(req_feature) == 0) {
+					LOGD("ProvisionalAction: %s and %s exact match", value2.c_str(), req_feature.c_str());
+					return pair<string, bool>(value1, true);
+				}
+				if (equals(req_feature, value1, string2strcmp_mode("glob"))) {
+					LOGD("ProvisionalAction: %s and %s partial match", value1.c_str(), req_feature.c_str());
+					return pair<string, bool>(value2, false);
+				}
+				if (equals(req_feature, value2, string2strcmp_mode("glob"))) {
+					LOGD("ProvisionalAction: %s and %s partial match", value2.c_str(), req_feature.c_str());
+					return pair<string, bool>(value1, false);
+				}
+			}
+		}
 	}
 	
-	// Provisional actions link together a single DHPref and a single feature,
-	// more than a feature in a request should not be allowed
-	// this is already tested in PolicyManager.cpp, but it is tested again here to be careful
-	if (features == 1 && value1.empty() == false && value2.empty() == false) {
-		LOGD("ProvisionalAction: values %s and %s to compare with %s", value1.c_str(), value2.c_str(), req_feature.c_str());
-		if (value1.compare(req_feature) == 0) {
-			LOGD("ProvisionalAction: %s and %s exact match", value1.c_str(), req_feature.c_str());
-			return pair<string, bool>(value2, true);
-		}
-		if (value2.compare(req_feature) == 0) {
-			LOGD("ProvisionalAction: %s and %s exact match", value2.c_str(), req_feature.c_str());
-			return pair<string, bool>(value1, true);
-		}
-		if (equals(req_feature, value1, string2strcmp_mode("glob"))) {
-			LOGD("ProvisionalAction: %s and %s partial match", value1.c_str(), req_feature.c_str());
-			return pair<string, bool>(value2, false);
-		}
-		if (equals(req_feature, value2, string2strcmp_mode("glob"))) {
-			LOGD("ProvisionalAction: %s and %s partial match", value2.c_str(), req_feature.c_str());
-			return pair<string, bool>(value1, false);
-		}
-	}
 	return pair<string, bool>("", false);
 }
