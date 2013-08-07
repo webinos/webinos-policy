@@ -24,6 +24,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -31,12 +32,19 @@ typedef vector<string> strings;
 const int STRCMP_NORMAL = 0;
 const int STRCMP_REGEXP = 1;
 const int STRCMP_GLOBBING = 2;
+const int STRCMP_GREATER_THAN = 3;
+const int STRCMP_GREATER_EQUAL_THAN = 4;
+const int STRCMP_LESS_THAN = 5;
+const int STRCMP_LESS_EQUAL_THAN = 6;
+const int STRCMP_IN_SET = 7;
 const int MAX_CAPTURES = 4;
 
 string glob2regexp (const string& glob);
 
 bool compare_regexp(const string& target,const string& expression);
 bool compare_globbing (const string& target,const string& expression);
+bool compare_numbers(const string& str1, const string& str2, int mode);
+bool compare_in_set(const string& str1, const string& str2);
 bool equals(const string& s1, const string& s2, const int mode=STRCMP_NORMAL);
 
 inline bool contains(const strings& ss, const string& s) { return (find(ss.begin(), ss.end(), s)!=ss.end()); }

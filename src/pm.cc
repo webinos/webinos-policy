@@ -558,6 +558,21 @@ public:
 				(*environment_attrs)["profile"] = *profile;
 				LOGD("Parameter profile : %s", *profile);
 			}
+			if (eiTmp->ToObject()->Has(String::New("timemin"))) {
+				v8::String::AsciiValue timemin(eiTmp->ToObject()->Get(String::New("timemin")));
+				(*environment_attrs)["timemin"] = *timemin;
+				LOGD("Parameter timemin : %s", *timemin);
+			}
+			if (eiTmp->ToObject()->Has(String::New("days-of-week"))) {
+				v8::String::AsciiValue daysofweek(eiTmp->ToObject()->Get(String::New("days-of-week")));
+				(*environment_attrs)["days-of-week"] = *daysofweek;
+				LOGD("Parameter daysofweek : %s", *daysofweek);
+			}
+			if (eiTmp->ToObject()->Has(String::New("days-of-month"))) {
+				v8::String::AsciiValue daysofmonth(eiTmp->ToObject()->Get(String::New("days-of-month")));
+				(*environment_attrs)["days-of-month"] = *daysofmonth;
+				LOGD("Parameter daysofmonth : %s", *daysofmonth);
+			}
 		}
 
 		if( args.Length()>1 && args[1]->IsObject()){

@@ -89,7 +89,7 @@
                                                                 "func":{
                                                                         "type":"string",
                                                                         "required":false,
-                                                                        "enum":["equal", "glob", "regexp"]
+                                                                        "enum":["equal", "glob", "regexp", "greater-than", "less-than", "greater-equal-than", "less-equal-than"]
                                                                 }
                                                             }
                                                         },
