@@ -191,9 +191,35 @@ ConditionResponse Condition::evaluateEnvironment(Request* req){
 	vector<match_info_str *> my_profile_vet = (it = environment_attrs.find("profile"))!=environment_attrs.end() 
 		? it->second 
 		: vector<match_info_str*>();
-	
+	vector<match_info_str * > my_time_vet = (it = environment_attrs.find("timemin")) != environment_attrs.end()
+		? it->second : vector<match_info_str*>();
+	match_info_str * my_daysofweek = (it = environment_attrs.find("days-of-week"))!=environment_attrs.end()
+				? it->second.at(0)
+				: NULL;
+	match_info_str * my_daysofmonth = (it = environment_attrs.find("days-of-month"))!=environment_attrs.end()
+					? it->second.at(0)
+					: NULL;
+
 	if(combine == OR){
 		LOGD("[ENVIRONMENT] dentro OR");
+		if(!my_time_vet.empty()){
+			string req_timemin = requestEnvironment_attrs["timemin"];
+			for(unsigned int j = 0; j < my_time_vet.size(); j++){
+				if(equals(req_timemin, my_time_vet[j]->value, string2strcmp_mode(my_time_vet[j]->equal_func))){
+					return MATCH;
+				}
+			}
+		}
+		if(my_daysofweek != NULL){
+			string req_daysofweek = requestEnvironment_attrs["days-of-week"];
+			if(equals(req_daysofweek, my_daysofweek->value, string2strcmp_mode("in-set")))
+							return MATCH;
+		}
+		if(my_daysofmonth != NULL){
+					string req_daysofmonth = requestEnvironment_attrs["days-of-month"];
+					if(equals(req_daysofmonth, my_daysofmonth->value, string2strcmp_mode("in-set")))
+									return MATCH;
+		}
 		if(my_roaming != NULL){
 			string req_roaming = requestEnvironment_attrs["roaming"];
 			LOGD("[ENVIRONMENT] req_roaming : %s",req_roaming.data());
@@ -218,6 +244,27 @@ ConditionResponse Condition::evaluateEnvironment(Request* req){
 	else{ //combine == AND
 		// find any No Match
 		LOGD("[ENVIRONMENT] dentro AND");
+
+		if(!my_time_vet.empty()){
+					string req_timemin = requestEnvironment_attrs["timemin"];
+					LOGD("timemin: %s", req_timemin.c_str());
+					for(unsigned int j = 0; j < my_time_vet.size(); j++){
+						LOGD("EQUAL FUNC: %s", my_time_vet[j]->equal_func.c_str());
+						if(!equals(req_timemin, my_time_vet[j]->value, string2strcmp_mode(my_time_vet[j]->equal_func))){
+							return NO_MATCH;
+						}
+					}
+		}
+		if(my_daysofweek != NULL){
+					string req_daysofweek = requestEnvironment_attrs["days-of-week"];
+					if(!equals(req_daysofweek, my_daysofweek->value, string2strcmp_mode("in-set")))
+									return NO_MATCH;
+				}
+		if(my_daysofmonth != NULL){
+							string req_daysofmonth = requestEnvironment_attrs["days-of-month"];
+							if(!equals(req_daysofmonth, my_daysofmonth->value, string2strcmp_mode("in-set")))
+									return NO_MATCH;
+		}
 		if(my_roaming != NULL){
 			string req_roaming = requestEnvironment_attrs["roaming"];
 			LOGD("[ENVIRONMENT] confronto : %s con %s",req_roaming.data(),my_roaming->value.data());

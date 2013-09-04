@@ -21,6 +21,7 @@
 #include <cstring>
 #include <cassert>
 #include "common.h"
+#include "../../debug.h"
 #include "../../contrib/xmltools/slre.h"
 
 
@@ -58,7 +59,60 @@ bool compare_regexp(const string& target,const string& expression) {
 	}
     return false;
 }
-
+bool compare_numbers(const string& str1, const string& str2, int mode){
+	//TODO verify conversion string to int
+	//LOGD("STR1: %s", str1.c_str());
+	int num1 = atoi(str1.c_str());
+	int num2 = atoi(str2.c_str());
+	if((num1 == 0 && str1.length() > 1) ||
+		(num2 == 0 && str2.length() > 1)){
+		LOGD("[common.cpp]Wrong timemin format");
+		return false;
+	}
+	//LOGD("NUM1: %d", num1);
+	//LOGD("NUM2: %d", num2);
+	switch(mode){
+		case STRCMP_GREATER_THAN:
+			if(num1 > num2){
+				//LOGD("GT - RETURNING TRUE");
+				return true;
+			}
+			//LOGD("GT - RETURNING FALSE");
+			return false;
+		case STRCMP_GREATER_EQUAL_THAN:
+			if(num1 >= num2)
+				return true;
+			return false;
+		case STRCMP_LESS_THAN:
+			if(num1 < num2){
+				//LOGD("LT - RETURNING TRUE");
+				return true;
+			}
+			//LOGD("LT - RETURNING FALSE");
+			return false;
+		case STRCMP_LESS_EQUAL_THAN:
+			if(num1 <= num2)
+				return true;
+			return false;
+	}
+	return false;
+}
+bool compare_in_set(const string& str1, const string& str2){
+	//TODO verify conversion string to int
+	unsigned long num1 = strtoul(str1.c_str(), NULL, 10);
+	unsigned long num2 = strtoul(str2.c_str(), NULL, 10);
+	//LOGD("IN-SET NUM1: %lu", num1);
+	//LOGD("IN-SET NUM2: %lu", num2);
+	if( (num1 == 0 && str1.length() > 1) ||
+			(num2 == 0 && str2.length() > 1)){
+			LOGD("[common.cpp]Wrong day format");
+			return false;
+		}
+	unsigned long result = num1 & num2;
+	//LOGD("IN-SET RESULT: %lu", result);
+	if(result != 0) return true;
+	return false;
+}
 string glob2regexp (const string& glob) {
     string result = "";
 //    cout << "\n Converting " << glob << " with size " << glob.size();
@@ -95,6 +149,16 @@ bool equals(const string& s1, const string& s2, const int mode) {
 	    return compare_regexp(s1,s2);
 	case STRCMP_GLOBBING:
 	    return compare_globbing(s1,s2);
+	case STRCMP_GREATER_THAN:
+		return compare_numbers(s1,s2,mode);
+	case STRCMP_GREATER_EQUAL_THAN:
+		return compare_numbers(s1,s2,mode);
+	case STRCMP_LESS_THAN:
+		return compare_numbers(s1,s2,mode);
+	case STRCMP_LESS_EQUAL_THAN:
+		return compare_numbers(s1,s2,mode);
+	case STRCMP_IN_SET:
+		return compare_in_set(s1,s2);
 	default:
 	    assert(false);
     }
@@ -114,5 +178,16 @@ int string2strcmp_mode(const string& s){
 		return STRCMP_NORMAL;
 	if(s == "regexp")
 		return STRCMP_REGEXP;
+	if(s == "greater-than")
+		return STRCMP_GREATER_THAN;
+	if(s == "greater-equal-than")
+		return STRCMP_GREATER_EQUAL_THAN;
+	if(s == "less-than")
+		return STRCMP_LESS_THAN;
+	if(s == "less-equal-than")
+		return STRCMP_LESS_EQUAL_THAN;
+	if(s == "in-set"){
+		return STRCMP_IN_SET;
+	}
 	return -1;
 }
