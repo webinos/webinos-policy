@@ -92,7 +92,8 @@ var policyList = [
 	"policy16.xml",
 	"policy_env_1.xml",
 	"policy_env_2.xml",
-	"policy_service_1.xml"
+	"policy_service_1.xml",
+	"policy_subject_id.xml"
 	];
 
 
@@ -2812,5 +2813,28 @@ describe("Manager.PolicyManager", function() {
 			expect(res.result).toEqual(0);
 		});
 	});
+
+	it("policy with subject id", function() {
+		runs(function() {
+			var res = checkFeature(policyList[31], userList[0], companyList[0], featureList[0], deviceList[0]);
+			expect(res.result).toEqual(4);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[31], userList[0], companyList[0], featureList[4], deviceList[1]);
+			expect(res.result).toEqual(1);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[31], userList[1], companyList[0], featureList[3], deviceList[1]);
+			expect(res.result).toEqual(4);
+		});
+
+		runs(function() {
+			var res = checkFeature(policyList[31], userList[2], companyList[2], featureList[1], deviceList[2]);
+			expect(res.result).toEqual(4);
+		});
+	});
+
 });
 

@@ -62,6 +62,18 @@
                                         "required":false,
                                         "additionalProperties":false,
                                         "properties":{
+                                            "$":{
+                                                "type":"object",
+                                                "id":"subjectattrs",
+                                                "required":false,
+                                                "additionalProperties":false,
+                                                "properties":{
+                                                    "id": {
+                                                        "type":"string",
+                                                        "required":false
+                                                    }
+                                                }
+                                            },
                                             "subject-match":{
                                                 "type":"array",
                                                 "id": "subject-match",
