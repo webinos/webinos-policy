@@ -45,6 +45,7 @@ public:
 		s_ct->SetClassName(String::NewSymbol("PolicyManagerInt"));
 		NODE_SET_PROTOTYPE_METHOD(s_ct, "enforceRequest", EnforceRequest);
 		NODE_SET_PROTOTYPE_METHOD(s_ct, "reloadPolicy", ReloadPolicy);
+		NODE_SET_PROTOTYPE_METHOD(s_ct, "getPolicyFilename", GetPolicyFilename);
 		target->Set(String::NewSymbol("PolicyManagerInt"),
 		s_ct->GetFunction());
 	}
@@ -618,6 +619,16 @@ public:
 		return scope.Close(result);
 	}
 	
+	
+	static Handle<Value> GetPolicyFilename(const Arguments& args)  {
+		HandleScope scope;
+
+		PolicyManagerInt* pmtmp = ObjectWrap::Unwrap<PolicyManagerInt>(args.This());
+
+		Local<String> result = String::New(pmtmp->policyFileName.c_str());
+		
+		return scope.Close(result);
+	}
 	
 	
 };
