@@ -37,7 +37,7 @@ Rule::Rule(TiXmlElement* rule, DHPrefs* dhp)
 		LOGD("Rule: DHPref %s found", child->Attribute(policyIdTag.c_str()));
 		(*dhp)[child->Attribute(policyIdTag.c_str())]=new DataHandlingPreferences(child);
 	}
-	LOGD("Rule DHPref number: %d", (*dhp).size());
+	LOGD("Rule DHPref number: %lu", (*dhp).size());
 
 	//init ProvisionalActions
 	for(TiXmlElement * child = static_cast<TiXmlElement*>(rule->FirstChild(provisionalActionsTag)); child;
@@ -81,7 +81,7 @@ Effect Rule::evaluate(Request* req, pair<string, bool>* selectedDHPref){
 	if (!condition || cr == MATCH) {
 		if((*selectedDHPref).second == false) {
 			// search for a provisional action with a resource matching the request
-			LOGD("Rule: looking for DHPref in %d ProvisionalActions",provisionalactions.size());
+			LOGD("Rule: looking for DHPref in %lu ProvisionalActions",provisionalactions.size());
 			for(unsigned int i=0; i<provisionalactions.size(); i++){
 				LOGD("Rule: ProvisionalActions %d evaluation", i);
 				preferenceid = provisionalactions[i]->evaluate(req);

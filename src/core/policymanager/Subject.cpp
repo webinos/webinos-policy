@@ -50,7 +50,7 @@ Subject::Subject(TiXmlElement* subject){
 			pos = nextPos+1;
 		}
 	}
-	LOGD("[Subject]  : subjects-match size : %d",info.size());
+	LOGD("[Subject]  : subjects-match size : %lu",info.size());
 }
 
 Subject::~Subject()
