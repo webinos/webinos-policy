@@ -47,7 +47,7 @@ PolicySet::PolicySet(TiXmlElement* set, DHPrefs* dhp) :
 		(*dhp)[child->Attribute(policyIdTag.c_str())] =
 				new DataHandlingPreferences(child);
 	}
-	LOGD("PolicySet DHPref number: %d", (*dhp).size());
+	LOGD("PolicySet DHPref number: %lu", (*dhp).size());
 
 	//init ProvisionalActions
 	for (TiXmlElement * child = static_cast<TiXmlElement*>(set->FirstChild(
@@ -423,7 +423,7 @@ void PolicySet::selectDHPref(Request* req, pair<string, bool>* selectedDHPref) {
 
 	if ((*selectedDHPref).second == false) {
 		// search for a provisional action with a resource matching the request
-		LOGD("PolicySet: looking for DHPref in %d ProvisionalActions",
+		LOGD("PolicySet: looking for DHPref in %lu ProvisionalActions",
 				provisionalactions.size());
 		for (unsigned int i = 0; i < provisionalactions.size(); i++) {
 			LOGD("PolicySet: ProvisionalActions %d evaluation", i);

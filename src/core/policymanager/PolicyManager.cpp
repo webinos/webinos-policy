@@ -39,11 +39,11 @@ PolicyManager::PolicyManager(const string & policyFileName)
 		TiXmlElement * element = (TiXmlElement *)doc.RootElement();
 		if(element->ValueStr() == "policy"){
 			policyDocument = new PolicySet(new Policy(element, dhp));
-			LOGD("DHPref number after Policy element creation: %d", (*dhp).size());
+			LOGD("DHPref number after Policy element creation: %lu", (*dhp).size());
 		}
 		else if(element->ValueStr() == "policy-set"){
 			policyDocument = new PolicySet(element, dhp);
-			LOGD("DHPref number after PolicySet element creation: %d", (*dhp).size());
+			LOGD("DHPref number after PolicySet element creation: %lu", (*dhp).size());
 		}
 		policyName = policyDocument->description;
 	}
