@@ -44,7 +44,7 @@ Policy::Policy(TiXmlElement* policy, DHPrefs* dhp) :
 		(*dhp)[child->Attribute(policyIdTag.c_str())] =
 				new DataHandlingPreferences(child);
 	}
-	LOGD("Policy DHPref number: %d", (*dhp).size());
+	LOGD("Policy DHPref number: %lu", (*dhp).size());
 
 	//init ProvisionalActions
 	for (TiXmlElement * child = static_cast<TiXmlElement*>(policy->FirstChild(
@@ -61,8 +61,8 @@ Policy::Policy(TiXmlElement* policy, DHPrefs* dhp) :
 		rules.push_back(new Rule(child, dhp));
 	}
 
-	LOGD("[Policy]  : subjects size : %d", subjects.size());
-	LOGD("[Policy]  : rules size : %d", rules.size());
+	LOGD("[Policy]  : subjects size : %lu", subjects.size());
+	LOGD("[Policy]  : rules size : %lu", rules.size());
 }
 
 Policy::~Policy() {
@@ -114,7 +114,7 @@ Effect Policy::evaluate(Request* req, pair<string, bool>* selectedDHPref) {
 
 				selectDHPref(req, selectedDHPref);
 
-				LOGD("eval : %d", tmp);
+				LOGD("eval : %p", tmp);
 				effects_result[tmp]++;
 				if (effects_result[DENY] > 0)
 					return DENY;
@@ -196,7 +196,7 @@ void Policy::selectDHPref(Request* req, pair<string, bool>* selectedDHPref) {
 
 	if ((*selectedDHPref).second == false) {
 		// search for a provisional action with a resource matching the request
-		LOGD("Policy: looking for DHPref in %d ProvisionalActions",
+		LOGD("Policy: looking for DHPref in %lu ProvisionalActions",
 				provisionalactions.size());
 		for (unsigned int i = 0; i < provisionalactions.size(); i++) {
 			LOGD("Policy: ProvisionalActions %d evaluation", i);
@@ -252,7 +252,7 @@ Effect Policy::evaluate(Request* req, pair<string, bool>* selectedDHPref,
 				pd->addRule(tmp, rules[i]->id, i);
 				selectDHPref(req, selectedDHPref);
 
-				LOGD("eval : %d", tmp);
+				LOGD("eval : %p", tmp);
 				effects_result[tmp]++;
 
 			}
