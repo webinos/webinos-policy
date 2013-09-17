@@ -50,7 +50,7 @@ private:
 	void selectDHPref(Request*, pair<string, bool>*);
 	
 public:
-	PolicySet(TiXmlElement*, DHPrefs*);
+	PolicySet(TiXmlElement*, DHPrefs*, map<string, vector<string>*> *);
 	PolicySet(IPolicyBase*);
 	virtual ~PolicySet();
 	

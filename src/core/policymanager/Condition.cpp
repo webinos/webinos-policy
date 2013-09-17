@@ -267,7 +267,7 @@ ConditionResponse Condition::evaluateEnvironment(Request* req){
 		}
 		if(my_roaming != NULL){
 			string req_roaming = requestEnvironment_attrs["roaming"];
-			LOGD("[ENVIRONMENT] confronto : %s con %s",req_roaming.data(),my_roaming->value.data());
+			LOGD("[ENVIRONMENT] compare : %s with %s",req_roaming.data(),my_roaming->value.data());
 			if(!equals(req_roaming, my_roaming->value, string2strcmp_mode(my_roaming->equal_func)))
 				return NO_MATCH;
 		}
@@ -402,16 +402,16 @@ ConditionResponse Condition::evaluateCapabilities(Request* req){
 							? modFunction(mod_function, req_capabilities_params->at(i))
 							: req_capabilities_params->at(i);
 				
-				LOGD("Confronto %s con %s",s.data(),my_capabilities_params[j]->value.data());
+				LOGD("compare %s with %s",s.data(),my_capabilities_params[j]->value.data());
 				if(equals(s.data(),my_capabilities_params[j]->value.data(), string2strcmp_mode(my_capabilities_params[j]->equal_func)))
 //				if(equals(req_capabilities_params->at(i).data(),my_capabilities_params[j]->value.data(), string2strcmp_mode(my_capabilities_params[j]->equal_func)))
 				{
-					LOGD("UGUALI");
+					LOGD("They are equals");
 					found = true;
 					break;
 				}
 				else
-					LOGD("DIVERSI");
+					LOGD("They are not equals");
 			}
 			if (found == false)
 				return NO_MATCH;
