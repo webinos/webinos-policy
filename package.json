@@ -39,6 +39,6 @@
   ]
 , "scripts": {
     "install": "node-gyp configure build"
-,   "test": "./test/tools/run-all.sh"
+,   "test": "node ./test/tools/run-all.js"
   }
 }
