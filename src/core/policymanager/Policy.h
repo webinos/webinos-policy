@@ -43,7 +43,7 @@ private:
 	
 	
 public:
-	Policy(TiXmlElement*, DHPrefs*);
+	Policy(TiXmlElement*, DHPrefs*, map<string, vector<string>*> *);
 	virtual ~Policy();
 	
 	bool matchSubject(Request*);

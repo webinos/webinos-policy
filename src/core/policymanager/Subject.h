@@ -45,7 +45,7 @@ private:
 	map<string,vector<match_info_str*> > info;
 	
 public:
-	Subject(TiXmlElement*);
+	Subject(TiXmlElement*, map<string, vector<string>*> *);
 	virtual ~Subject();
 	
 	bool match(Request*);

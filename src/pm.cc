@@ -59,6 +59,10 @@ public:
 		HandleScope scope;
 		PolicyManagerInt* pmtmp = new PolicyManagerInt();
 
+		map<string, vector<string>*> *pip = new map<string, vector<string>*>();
+		(*pip)["http://webinos.org/subject/id/PZ-Owner"] = new vector<string>();
+		(*pip)["http://webinos.org/subject/id/known"] = new vector<string>();
+
 		if (args.Length() > 0) {
 			if (!args[0]->IsString()) {
 				LOGD("Wrong parameter type");
@@ -70,13 +74,32 @@ public:
 			//	delete[] pmtmp->policyFileName;
 			//}
 			pmtmp->policyFileName = *tmpFileName;
+
+			if (args[1]->ToObject()->Has(String::New("http://webinos.org/subject/id/PZ-Owner"))) {
+				v8::String::AsciiValue ownerId(args[1]->ToObject()->Get(String::New("http://webinos.org/subject/id/PZ-Owner")));
+				(*pip)["http://webinos.org/subject/id/PZ-Owner"]->push_back(*ownerId);
+			}
+
+			if (args[1]->ToObject()->Has(String::New("http://webinos.org/subject/id/known"))) {
+				v8::Local<Array> knownList = v8::Local<Array>::Cast(args[1]->ToObject()->Get(String::New("http://webinos.org/subject/id/known")));
+                LOGD("knownList->Length() = %d", knownList->Length());
+				unsigned int i = 0;
+				for (i=0; i < knownList->Length(); i++)
+				{
+			        LOGD("Known[%d]:",i);
+					v8::String::AsciiValue knownId(knownList->Get(i));
+					(*pip)["http://webinos.org/subject/id/known"]->push_back(*knownId);
+
+			        LOGD("Known[%d]: %s",i, *knownId);
+				}
+			}
 		}
 		else {
 			LOGD("Missing parameter");
 			return ThrowException(Exception::TypeError(String::New("Missing argument")));
 		}
 
-		pmtmp->pminst = new PolicyManager(pmtmp->policyFileName);
+		pmtmp->pminst = new PolicyManager(pmtmp->policyFileName, pip);
 		pmtmp->Wrap(args.This());
 		return args.This();
 	}
@@ -612,7 +635,27 @@ public:
 		LOGD("ReloadPolicy - file is %s", pmtmp->policyFileName.c_str());
 		//TODO: Reload policy file
 		delete pmtmp->pminst;
-		pmtmp->pminst = new PolicyManager(pmtmp->policyFileName);
+
+		map<string, vector<string>*> *pip = new map<string, vector<string>*>();
+		(*pip)["http://webinos.org/subject/id/PZ-Owner"] = new vector<string>();
+		(*pip)["http://webinos.org/subject/id/known"] = new vector<string>();
+
+		if (args[1]->ToObject()->Has(String::New("http://webinos.org/subject/id/PZ-Owner"))) {
+			v8::String::AsciiValue ownerId(args[1]->ToObject()->Get(String::New("http://webinos.org/subject/id/PZ-Owner")));
+			(*pip)["http://webinos.org/subject/id/PZ-Owner"]->push_back(*ownerId);
+		}
+
+		if (args[1]->ToObject()->Has(String::New("http://webinos.org/subject/id/known"))) {
+			v8::Local<Array> knownList = v8::Local<Array>::Cast(args[1]->ToObject()->Get(String::New("http://webinos.org/subject/id/known")));
+			unsigned int i = 0;
+			for (i=0; i < knownList->Length(); i++);
+			{
+				v8::String::AsciiValue knownId(knownList->Get(i)->ToString());
+				(*pip)["http://webinos.org/subject/id/known"]->push_back(*knownId);
+			}
+		}
+
+		pmtmp->pminst = new PolicyManager(pmtmp->policyFileName, pip);
 
 		Local<Integer> result = Integer::New(0);
 		

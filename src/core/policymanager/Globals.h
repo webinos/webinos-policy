@@ -21,6 +21,7 @@
 #define GLOBALS_H_
 
 #include <string>
+#include <vector>
 using namespace std;
 
 enum PolicyType {POLICY_SET, POLICY};
@@ -39,5 +40,6 @@ enum EvalResponse {WGINFO_ERR, REF_ERR, POLICY_ERR, EVAL_OK};
 #define DEVICE_CAPABILITY 		"device-cap"
 
 string modFunction(const string& func, const string& val);
+vector<string> split(const string& str, const char& ch);
 
 #endif /* GLOBALS_H_ */

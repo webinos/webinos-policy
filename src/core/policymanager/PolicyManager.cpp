@@ -21,28 +21,28 @@
 #include "../../debug.h"
 
 PolicyManager::PolicyManager()
-	:dhp(0)
+	:dhp(0), pip(0)
 {}
 
-PolicyManager::PolicyManager(const string & policyFileName)
-	:dhp(0)
+PolicyManager::PolicyManager(const string & policyFileName, map<string, vector<string>*>* info)
+	:dhp(0), pip(0)
 {
-
 	TiXmlDocument doc(policyFileName);
 	LOGD("Policy manager file : %s",policyFileName.data());
 
 	if (doc.LoadFile())
 	{
+		pip = info;
 		dhp = new DHPrefs();
 		LOGD("Policy manager file load ok");
 		validPolicyFile = true;
 		TiXmlElement * element = (TiXmlElement *)doc.RootElement();
 		if(element->ValueStr() == "policy"){
-			policyDocument = new PolicySet(new Policy(element, dhp));
+			policyDocument = new PolicySet(new Policy(element, dhp, pip));
 			LOGD("DHPref number after Policy element creation: %lu", (*dhp).size());
 		}
 		else if(element->ValueStr() == "policy-set"){
-			policyDocument = new PolicySet(element, dhp);
+			policyDocument = new PolicySet(element, dhp, pip);
 			LOGD("DHPref number after PolicySet element creation: %lu", (*dhp).size());
 		}
 		policyName = policyDocument->description;
