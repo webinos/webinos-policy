@@ -21,7 +21,7 @@
 #include <cstring>
 #include <cassert>
 #include "common.h"
-#include "../../debug.h"
+#include "../debug.h"
 #include "../../contrib/xmltools/slre.h"
 
 
@@ -41,8 +41,6 @@ using namespace std;
 bool compare_regexp(const string& target,const string& expression) {
     struct slre slre;
     struct cap  captures[MAX_CAPTURES];
-
-//    cout << "\n matching "  << target << " in expression " << expression << endl;
 
     if (!slre_compile(&slre,expression.c_str())) {
 //	    printf("Error compiling RE: %s\n", slre.err_str);
@@ -115,7 +113,6 @@ bool compare_in_set(const string& str1, const string& str2){
 }
 string glob2regexp (const string& glob) {
     string result = "";
-//    cout << "\n Converting " << glob << " with size " << glob.size();
     for (unsigned int i = 0;i<glob.size();++i)
     {
 	if (glob[i]=='?')
@@ -128,7 +125,6 @@ string glob2regexp (const string& glob) {
     }
 	// ABOT Commented the following line because I was getting an xstring assert fail "string subscript out of range"
     //result[glob.size()] = 0;
-//    cout  << "\n Converted " << glob << " to " << result << endl;
     return result;
 }
 

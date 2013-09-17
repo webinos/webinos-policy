@@ -19,7 +19,7 @@
 
 #include "Policy.h"
 
-Policy::Policy(TiXmlElement* policy, DHPrefs* dhp) :
+Policy::Policy(TiXmlElement* policy, DHPrefs* dhp, map<string, vector<string>*> *pip) :
 		IPolicyBase(policy), datahandlingpreferences(dhp) {
 	iType = POLICY;
 	ruleCombiningAlgorithm =
@@ -32,7 +32,7 @@ Policy::Policy(TiXmlElement* policy, DHPrefs* dhp) :
 		for (TiXmlElement * child = (TiXmlElement*) target->FirstChild(
 				"subject"); child; child =
 				(TiXmlElement*) child->NextSibling()) {
-			subjects.push_back(new Subject(child));
+			subjects.push_back(new Subject(child, pip));
 		}
 	}
 

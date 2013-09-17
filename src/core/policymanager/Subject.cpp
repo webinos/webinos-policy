@@ -21,7 +21,7 @@
 #include "Policy.h"
 
 
-Subject::Subject(TiXmlElement* subject){
+Subject::Subject(TiXmlElement* subject, map<string, vector<string>*> *pip){
 	for(TiXmlElement * child = (TiXmlElement*)subject->FirstChild("subject-match"); child;
 			child = (TiXmlElement*)child->NextSibling() ) {
 		
@@ -45,6 +45,36 @@ Subject::Subject(TiXmlElement* subject){
 				
 				tmp_info->mod_func = (dot_pos != (int)string::npos) ? attr.substr(dot_pos+1) : "";
 				LOGD("subject() %d - equal_func=%s, value=%s, mod_func=%s", pos, tmp_info->equal_func.data(), tmp_info->value.data(), tmp_info->mod_func.data());
+
+				if (pip !=NULL)
+				{
+					string genericURI_PzOwner = string ("http://webinos.org/subject/id/PZ-Owner");
+					size_t found_PzOwner = tmp_info->value.find(genericURI_PzOwner);
+					if (found_PzOwner != string::npos)
+					{
+						if (pip->find(genericURI_PzOwner) != pip->end() && (*pip)[genericURI_PzOwner]->size() > 0) 
+						{
+							string user = (*pip)[genericURI_PzOwner]->at(0);
+							tmp_info->value.replace(found_PzOwner, genericURI_PzOwner.length(), user);
+						}
+					}
+
+					string genericURI_known = string ("http://webinos.org/subject/id/known");
+					size_t found_known = tmp_info->value.find(genericURI_known);
+					if (found_known != string::npos)
+					{
+						if (pip->find(genericURI_known) != pip->end() && (*pip)[genericURI_known]->size() > 0) 
+						{
+							string known = "";
+							for (unsigned int i = 0; i < (*pip)[genericURI_known]->size(); i++) 
+							{
+								known += (i ? "," : "") + (*pip)[genericURI_known]->at(i);
+							}
+							tmp_info->value.replace(found_known, genericURI_known.length(), known);
+						}
+					}
+				}
+
 				info[key].push_back(tmp_info);
 			}
 			pos = nextPos+1;
@@ -76,13 +106,18 @@ bool Subject::match(Request* req){
 				for(unsigned int i=0; !foundInBag && i<req_vet->size(); i++){ //iteration on request's elements. 
 					string mod_function = info_vet[j]->mod_func;
 					LOGD("Subject.match() - mod_function=%s - req_vet=%s", mod_function.data(), req_vet->at(i).data());
-					string s = (mod_function != "") 
-						? modFunction(mod_function, req_vet->at(i))
-						: req_vet->at(i);
-					LOGD("[Subject] Confronto %s con %s ",s.data(),info_vet[j]->value.data());
-					if(equals(s, info_vet[j]->value, string2strcmp_mode(info_vet[j]->equal_func))){
-						foundInBag = true;
-						LOGD("[Subject] Found subject-match for %s ",s.data());
+
+                    vector<string> bagVector = split(info_vet[j]->value.data(), ',');
+
+                    for(vector<string>::iterator it_bag = bagVector.begin(); it_bag != bagVector.end(); it_bag++) {
+						string s = (mod_function != "") 
+							? modFunction(mod_function, req_vet->at(i))
+							: req_vet->at(i);
+						LOGD("[Subject] Compare %s with %s ",s.data(),it_bag->data());
+						if(equals(s, it_bag->data(), string2strcmp_mode(info_vet[j]->equal_func))){
+							foundInBag = true;
+							LOGD("[Subject] Found subject-match for %s ",s.data());
+						}
 					}
 				}
 				if(!foundInBag)

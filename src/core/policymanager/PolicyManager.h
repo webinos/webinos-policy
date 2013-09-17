@@ -36,8 +36,9 @@ private:
 public:
 	pair<string, bool> selectedDHPref;
 	DHPrefs* dhp;
+	map<string, vector<string>*>* pip;
 	PolicyManager();
-	PolicyManager(const string &);
+	PolicyManager(const string &, map<string, vector<string>*>*);
 	virtual ~PolicyManager();
 	Effect checkRequest(Request *);
 	Effect checkRequest(Request*, string&);
