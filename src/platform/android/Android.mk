@@ -51,6 +51,9 @@ LOCAL_SRC_FILES :=\
         ../../core/policymanager/Rule.cpp \
         ../../core/policymanager/Subject.cpp \
         ../../core/policymanager/TriggersSet.cpp \
+	    ../../core/policymanager/IPolicyBaseDescriptor.cpp \
+	    ../../core/policymanager/PolicyDescriptor.cpp \
+	    ../../core/policymanager/PolicySetDescriptor.cpp \
         ../../core/common.cpp \
         ../../../contrib/xmltools/tinyxml.cpp \
         ../../../contrib/xmltools/slre.cpp \
