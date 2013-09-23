@@ -63,8 +63,12 @@ public:
 		(*pip)["http://webinos.org/subject/id/PZ-Owner"] = new vector<string>();
 		(*pip)["http://webinos.org/subject/id/known"] = new vector<string>();
 
-		if (args.Length() > 0) {
+		if (args.Length() > 1) {
 			if (!args[0]->IsString()) {
+				LOGD("Wrong parameter type");
+				return ThrowException(Exception::TypeError(String::New("Bad type argument")));
+			}
+			if (!args[1]->IsObject()) {
 				LOGD("Wrong parameter type");
 				return ThrowException(Exception::TypeError(String::New("Bad type argument")));
 			}
