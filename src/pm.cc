@@ -644,22 +644,32 @@ public:
 		(*pip)["http://webinos.org/subject/id/PZ-Owner"] = new vector<string>();
 		(*pip)["http://webinos.org/subject/id/known"] = new vector<string>();
 
-		if (args[1]->ToObject()->Has(String::New("http://webinos.org/subject/id/PZ-Owner"))) {
-			v8::String::AsciiValue ownerId(args[1]->ToObject()->Get(String::New("http://webinos.org/subject/id/PZ-Owner")));
-			(*pip)["http://webinos.org/subject/id/PZ-Owner"]->push_back(*ownerId);
-		}
-
-		if (args[1]->ToObject()->Has(String::New("http://webinos.org/subject/id/known"))) {
-			v8::Local<Array> knownList = v8::Local<Array>::Cast(args[1]->ToObject()->Get(String::New("http://webinos.org/subject/id/known")));
-			unsigned int i = 0;
-			for (i=0; i < knownList->Length(); i++);
-			{
-				v8::String::AsciiValue knownId(knownList->Get(i)->ToString());
-				(*pip)["http://webinos.org/subject/id/known"]->push_back(*knownId);
+		if (args.Length() > 0) {
+			if (!args[0]->IsObject()) {
+				LOGD("Wrong parameter type");
+				return ThrowException(Exception::TypeError(String::New("Bad type argument")));
 			}
-		}
+			if (args[0]->ToObject()->Has(String::New("http://webinos.org/subject/id/PZ-Owner"))) {
+				v8::String::AsciiValue ownerId(args[0]->ToObject()->Get(String::New("http://webinos.org/subject/id/PZ-Owner")));
+				(*pip)["http://webinos.org/subject/id/PZ-Owner"]->push_back(*ownerId);
+			}
 
-		pmtmp->pminst = new PolicyManager(pmtmp->policyFileName, pip);
+			if (args[0]->ToObject()->Has(String::New("http://webinos.org/subject/id/known"))) {
+				v8::Local<Array> knownList = v8::Local<Array>::Cast(args[0]->ToObject()->Get(String::New("http://webinos.org/subject/id/known")));
+				unsigned int i = 0;
+				for (i=0; i < knownList->Length(); i++);
+				{
+					v8::String::AsciiValue knownId(knownList->Get(i)->ToString());
+					(*pip)["http://webinos.org/subject/id/known"]->push_back(*knownId);
+				}
+			}
+
+			pmtmp->pminst = new PolicyManager(pmtmp->policyFileName, pip);
+		}
+		else {
+			LOGD("Missing argument");
+			return ThrowException(Exception::TypeError(String::New("Missing argument")));
+		}
 
 		Local<Integer> result = Integer::New(0);
 		
