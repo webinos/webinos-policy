@@ -2,7 +2,7 @@
 , "publishConfig": { "tag": "alpha" }
 , "description": "Policy Manager"
 , "keywords": [ "webinos", "policy", "manager"]
-, "version": "0.0.2"
+, "version": "0.0.3"
 , "homepage": "http://webinos.org/"
 , "author": "Stefano Vercelli <stefano.vercelli@telecomitalia.it>, Salvatore Monteleone <salvatore.monteleone@dieei.unict.it>"
 , "repository":
