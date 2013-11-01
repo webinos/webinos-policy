@@ -59,8 +59,7 @@ string PolicySetDescriptor::toJSONString() {
 		result.append("]");
 	}
 	if (!policySetChilds.empty()) {
-		if (!policyChilds.empty())
-			result.append(", ");
+		result.append(", ");
 		result.append(" \"policy-set\": [");
 		for (vector<IPolicyBaseDescriptor*>::iterator it2 =
 				policySetChilds.begin(); it2 != policySetChilds.end();) {
