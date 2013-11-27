@@ -657,7 +657,7 @@ public:
 			if (args[0]->ToObject()->Has(String::New("http://webinos.org/subject/id/known"))) {
 				v8::Local<Array> knownList = v8::Local<Array>::Cast(args[0]->ToObject()->Get(String::New("http://webinos.org/subject/id/known")));
 				unsigned int i = 0;
-				for (i=0; i < knownList->Length(); i++);
+				for (i=0; i < knownList->Length(); i++)
 				{
 					v8::String::AsciiValue knownId(knownList->Get(i)->ToString());
 					(*pip)["http://webinos.org/subject/id/known"]->push_back(*knownId);
