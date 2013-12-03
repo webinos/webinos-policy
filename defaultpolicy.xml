@@ -1,16 +1,26 @@
-<policy id="p1" combine="first-applicable" description="catch">
-	<rule id="r1" effect="permit"></rule>
-	<DataHandlingPreferences PolicyId="#DHP_allow_all">
-		<AuthorizationsSet>
-			<AuthzUseForPurpose>
-					<Purpose/>
-			</AuthzUseForPurpose>
-		</AuthorizationsSet>
-	</DataHandlingPreferences>
-	<ProvisionalActions>
-		<ProvisionalAction>
-			<AttributeValue>#DHP_allow_all</AttributeValue>
-			<AttributeValue>*</AttributeValue>
-		</ProvisionalAction>
-	</ProvisionalActions>
-</policy>
+<policy-set id="policySetId1" combine="first-matching-target" description="defaultPolicySet">
+    <policy id="policyId1" combine="first-applicable" description="ownerPolicy">
+        <target>
+            <subject>
+                <subject-match attr="user-id" match="http://webinos.org/subject/id/PZ-Owner"/>
+            </subject>
+        </target>
+        <rule id="ruleId1" effect="permit"></rule>
+    </policy>
+    <policy id="policyId2" combine="first-applicable" description="defaultPolicy">
+        <rule id="ruleId2" effect="deny"></rule>
+    </policy>
+    <DataHandlingPreferences PolicyId="#DHP_allow_all">
+        <AuthorizationsSet>
+            <AuthzUseForPurpose>
+                <Purpose/>
+            </AuthzUseForPurpose>
+        </AuthorizationsSet>
+    </DataHandlingPreferences>
+    <ProvisionalActions>
+        <ProvisionalAction>
+            <AttributeValue>#DHP_allow_all</AttributeValue>
+            <AttributeValue>*</AttributeValue>
+        </ProvisionalAction>
+    </ProvisionalActions>
+</policy-set>
